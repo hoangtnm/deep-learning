@@ -29,14 +29,14 @@ Colab supports both the `pip` and `apt` package managers.
 
 ### Upload Datasets
 
-#### Code to upload from local
+#### Code to upload from Local
 
 ```
 from google.colab import files
 uploaded = files.upload()
 ```
 
-#### Upload files from google drive
+#### Upload files from Google Drive
 
 ```
 !pip install -U -q PyDrive
