@@ -3,7 +3,7 @@
 
 ### Check whether TPU is enabled
 
-```
+```python
 import os
 import pprint
 import tensorflow as tf
@@ -22,7 +22,7 @@ else:
 
 Colab supports both the `pip` and `apt` package managers.
 
-```
+```python
 !pip install torch
 !apt install -y graphviz
 ```
@@ -31,7 +31,7 @@ Colab supports both the `pip` and `apt` package managers.
 
 #### Code to upload from Local
 
-```
+```python
 from google.colab import files
 uploaded = files.upload()
 ```
@@ -42,7 +42,7 @@ You can get id of the file you want to upload,and use the above code.
 
 For more resource to upload files from [Google Services](https://colab.research.google.com/notebooks/io.ipynb#scrollTo=bRFyEsdfBxJ9).
 
-```
+```python
 !pip install -U -q PyDrive
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
