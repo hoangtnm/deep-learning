@@ -22,7 +22,7 @@ else:
 
 Colab supports both the `pip` and `apt` package managers.
 
-```python
+```
 !pip install torch
 !apt install -y graphviz
 ```
@@ -42,7 +42,7 @@ You can get id of the file you want to upload,and use the above code.
 
 For more resource to upload files from [Google Services](https://colab.research.google.com/notebooks/io.ipynb#scrollTo=bRFyEsdfBxJ9).
 
-```python
+```
 !pip install -U -q PyDrive
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
