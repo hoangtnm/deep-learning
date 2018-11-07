@@ -38,6 +38,10 @@ uploaded = files.upload()
 
 #### Upload files from Google Drive
 
+You can get id of the file you want to upload,and use the above code.
+
+For more resource to upload files from [google services](https://colab.research.google.com/notebooks/io.ipynb#scrollTo=bRFyEsdfBxJ9).
+
 ```
 !pip install -U -q PyDrive
 from pydrive.auth import GoogleAuth
