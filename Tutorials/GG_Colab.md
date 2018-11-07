@@ -40,7 +40,7 @@ uploaded = files.upload()
 
 You can get id of the file you want to upload,and use the above code.
 
-For more resource to upload files from [google services](https://colab.research.google.com/notebooks/io.ipynb#scrollTo=bRFyEsdfBxJ9).
+For more resource to upload files from [Google Services](https://colab.research.google.com/notebooks/io.ipynb#scrollTo=bRFyEsdfBxJ9).
 
 ```
 !pip install -U -q PyDrive
