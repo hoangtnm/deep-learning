@@ -44,22 +44,27 @@ For more resource to upload files from [Google Services](https://colab.research.
 
 ```
 !pip install -U -q PyDrive
+
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from google.colab import auth
 from oauth2client.client import GoogleCredentials
+
 # 1. Authenticate and create the PyDrive client.
 auth.authenticate_user()
 gauth = GoogleAuth()
 gauth.credentials = GoogleCredentials.get_application_default()
 drive = GoogleDrive(gauth)
+
 # PyDrive reference:
 # https://gsuitedevs.github.io/PyDrive/docs/build/html/index.html
 # 2. Create & upload a file text file.
+
 uploaded = drive.CreateFile({'title': 'Sample upload.txt'})
 uploaded.SetContentString('Sample upload file content')
 uploaded.Upload()
 print('Uploaded file with ID {}'.format(uploaded.get('id')))
+
 # 3. Load a file by ID and print its contents.
 downloaded = drive.CreateFile({'id': uploaded.get('id')})
 print('Downloaded content "{}"'.format(downloaded.GetContentString()))
