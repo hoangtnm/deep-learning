@@ -12,7 +12,7 @@ import tensorflow as tf
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1,
                             allow_growth=True,
-                            visible_device_list = "0")
+                            visible_device_list="0")
 config = tf.ConfigProto(allow_soft_placement=False,
                         log_device_placement=True,
                         gpu_options=gpu_options)
