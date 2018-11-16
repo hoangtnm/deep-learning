@@ -11,15 +11,13 @@ import tensorflow as tf
 """
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1,
-							allow_growth=True,
-							visible_device_list = "0")
-config=tf.ConfigProto(
-				allow_soft_placement=False,
-				log_device_placement=True,
-				gpu_options=gpu_options
-				)
+                            allow_growth=True,
+                            visible_device_list = "0")
+config=tf.ConfigProto(allow_soft_placement=False,
+                      log_device_placement=True,
+                      gpu_options=gpu_options)
 
-"""Example of output
+"""Example of outputs
 session = tf.Session(config=config, ...)
 Device mapping:
 /job:localhost/replica:0/task:0/device:GPU:0 -> device: 0, name: Tesla K40c, pci bus
