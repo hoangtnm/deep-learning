@@ -19,7 +19,7 @@ config=tf.ConfigProto(
 				gpu_options=gpu_options
 				)
 
-"""Example of outputs
+"""Example of output
 session = tf.Session(config=config, ...)
 Device mapping:
 /job:localhost/replica:0/task:0/device:GPU:0 -> device: 0, name: Tesla K40c, pci bus
