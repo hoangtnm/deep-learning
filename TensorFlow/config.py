@@ -1,7 +1,3 @@
-#! /usr/bin/python
-
-#import os
-#os.environ["CUDA_VISIBLE_DEVICES"]="0"
 import tensorflow as tf
 
 """Supported devices
@@ -9,16 +5,17 @@ import tensorflow as tf
 /device:GPU:0: The GPU of your machine, if you have one.
 /device:GPU:1: The second GPU of your machine, etc.
 """
-
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1,
-                            allow_growth=True,
-                            visible_device_list="0")
-config = tf.ConfigProto(allow_soft_placement=False,
-                        log_device_placement=True,
-                        gpu_options=gpu_options)
+def get_config():
+    gpu_config = tf.GPUOptions(per_process_gpu_memory_fraction=1,
+                               allow_growth=True,
+                               visible_device_list="0")
+    multi_config = tf.ConfigProto(allow_soft_placement=False,
+                                  log_device_placement=True,
+                                  gpu_options=gpu_config)
+    return multi_config
 
 """Example of outputs
-session = tf.Session(config=config, ...)
+session = tf.Session(config=multi_config(), ...)
 Device mapping:
 /job:localhost/replica:0/task:0/device:GPU:0 -> device: 0, name: Tesla K40c, pci bus
 id: 0000:05:00.0
