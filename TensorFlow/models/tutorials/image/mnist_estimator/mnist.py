@@ -31,14 +31,15 @@ def mnist_model(features, labels, mode):
         pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
         pool2_flat = tf.reshape(pool2, shape=[-1, 7 * 7 * 64])
     
-    with tf.name_scope("layer_3"):
+    with tf.name_scope("fc_1"):
         dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
         dropout = tf.layers.dropout(
             inputs=dense, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
     
-    with tf.name_scope("layer_4"):
+    with tf.name_scope("fc_2"):
         logits = tf.layers.dense(inputs=dropout, units=10)
     
+    # Compile our predictions in a dict, and return an EstimatorSpec object
     predictions = {
         # Generate predictions (for PREDICT and EVAL)
         "classes": tf.argmax(input=logits, axis=1),
@@ -46,7 +47,6 @@ def mnist_model(features, labels, mode):
         # `logging_hook`
         "probabilities": tf.nn.softmax(logits, name="softmax_tensor")
     }
-
     if mode == tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
     
