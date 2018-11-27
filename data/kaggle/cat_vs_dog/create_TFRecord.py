@@ -20,7 +20,7 @@ def get_init_dataset(SHUFFLE=True):
         addrs  (list): address of each picture in the train folder
         labels (list): 0 = Cat, 1 = Dog
     """
-    DATA_PATH = "%s/*.jpg" % (FLAGS.input_data)
+    DATA_PATH = "%s/*.jpg" % (FLAGS.data_dir)
     addrs = glob.glob(DATA_PATH)
     labels = [0 if 'cat' in addr else 1 for addr in addrs]
 
@@ -93,7 +93,7 @@ def main(unused_argv):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input_data',
+    parser.add_argument('-i', '--data_dir',
                         default='./train',
                         required=False,
                         help="path to input data")
