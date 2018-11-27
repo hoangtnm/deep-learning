@@ -9,7 +9,7 @@ from random import shuffle
 
 FLAGS = None
 
-def get_init_dataset(shuffle=True):
+def get_init_dataset(SHUFFLE=True):
     """Read addresses and labels from `train` folder
     The `glob` module return a list of paths matching a pathname pattern
 
@@ -25,7 +25,7 @@ def get_init_dataset(shuffle=True):
     labels = [0 if 'cat' in addr else 1 for addr in addrs]
 
     # Shuffle the data
-    if shuffle:
+    if SHUFFLE:
         # Return a list of tuples, each one includes (addrs, label)
         data = list(zip(addrs, labels))
         shuffle(data)
