@@ -66,8 +66,8 @@ def _bytes_feature(value):
 
 def convert_to(dataset, name):
     """Converts a dataset to tfrecord."""
-    images = dataset['name' + '_addrs']
-    labels = dataset['name' + '_labels']
+    images = dataset[name + '_addrs']
+    labels = dataset[name + '_labels']
 
     filename = os.path.join(FLAGS.directory, name + '.tfrecord')
     print('Writing', filename)
