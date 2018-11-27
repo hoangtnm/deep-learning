@@ -49,7 +49,7 @@ def get_init_dataset(SHUFFLE=True):
 03. Serialize the protocol buffer to a string and write it to a TFRecord file
 """
 def load_img(img_path):
-    IMG_SIZE = FLAGS.img_size
+    IMG_SIZE = FLAGS.image_size
 
     img = cv2.imread(img_path)
     img = cv2.resize(img, IMG_SIZE, interpolation=cv2.INTER_CUBIC)
@@ -69,7 +69,9 @@ def convert_to(dataset, name):
     images = dataset[name + '_addrs']
     labels = dataset[name + '_labels']
 
-    filename = os.path.join(FLAGS.directory, name + '.tfrecord')
+    filename = name + '.tfrecord'
+    #filename = os.path.join(FLAGS.directory, name + '.tfrecord')
+    #tensorflow.python.framework.errors_impl.NotFoundError: /tmp/data/train.tfrecord; No such file or directory
     print('Writing', filename)
     with tf.python_io.TFRecordWriter(filename) as writer:
         for index in range(len(images)):
