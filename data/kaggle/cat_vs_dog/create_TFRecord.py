@@ -87,7 +87,7 @@ def convert_to(dataset, name):
 
 def main(unused_argv):
     # Convert to Examples and write the result to TFRecords.
-    convert_to(dataset=get_init_dataset(), name='train')
+    convert_to(dataset=get_init_dataset(), name=FLAGS.output_dataset)
     #convert_to(dataset.val, 'val')
     #convert_to(dataset.test, 'test')
 
