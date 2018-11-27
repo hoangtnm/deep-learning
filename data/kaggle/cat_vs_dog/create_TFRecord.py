@@ -33,12 +33,12 @@ def get_init_dataset(SHUFFLE=True):
 
     # Divide the hata into 60% train, 20% validation, and 20% test
     init_dataset = {
-        'train_addrs' : addrs[0:int(0.6*len(addrs))],
-        'train_labels' : labels[0:int(0.6*len(labels))],
-        'val_addrs' : addrs[int(0.6*len(addrs)):int(0.8*len(addrs))],
-        'val_labels' : labels[int(0.6*len(addrs)):int(0.8*len(addrs))],
-        'test_addrs' : addrs[int(0.8*len(addrs)):],
-        'test_labels' : labels[int(0.8*len(labels)):]
+        'train_addrs' : addrs[0:int(FLAGS.train_size*len(addrs))],
+        'train_labels' : labels[0:int(FLAGS.train_size*len(labels))],
+        'val_addrs' : addrs[int(FLAGS.train_size*len(addrs)):int((1-FLAGS.test_size)*len(addrs))],
+        'val_labels' : labels[int(FLAGS.train_size*len(addrs)):int((1-FLAGS.test_size)*len(addrs))],
+        'test_addrs' : addrs[int((1-FLAGS.test_size)*len(addrs)):],
+        'test_labels' : labels[int((1-FLAGS.test_size)*len(labels)):]
     }
     
     return init_dataset
@@ -109,9 +109,13 @@ if __name__ == '__main__':
                         type=str,
                         default='/tmp/data',
                         help='Directory to write the converted result')
-    parser.add_argument('--validation_size',
-                        type=int,
-                        default=5000,
+    parser.add_argument('--train_size',
+                        type=float,
+                        default=0.6,
+                        help="Train size")
+    parser.add_argument('--test_size',
+                        type=float,
+                        default=0.2,
                         help="Valiation size")
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
