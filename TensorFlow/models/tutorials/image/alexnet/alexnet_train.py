@@ -8,7 +8,7 @@ import alexnet_bench as alexnet
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('data_dir', './',
+tf.app.flags.DEFINE_string('data_dir', '../../data/kaggle/cat_vs_dog',
                            """Directory to TFRecord files""")
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """Directory where to write event logs"""

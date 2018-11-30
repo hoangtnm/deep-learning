@@ -1,6 +1,5 @@
 import os
 import re
-import argparse
 import datetime
 import time
 import tensorflow as tf
@@ -19,7 +18,7 @@ tf.app.flags.DEFINE_boolean('use_fp16', False,
 
 # Global constants describing the CIFAR-10 data set.
 NUM_CLASSES = 2
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = None
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 25000
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = None
 
 
@@ -56,6 +55,7 @@ def _activation_summary(x):
 
 def _variable_on_cpu(name, shape, initializer):
     """Helper to create a Variable stored on CPU memory.
+
     Args:
         name: name of the variable
         shape: list of ints
@@ -89,10 +89,8 @@ def inference(images):
         images: image tensor
 
     Returns:
-        pool5: the last Tensor in the CNN componet of AlexNet
-        parameters: a list of Tensors corresponding to the W and b of the model
+        softmax_linear
     """
-    parameters = []
     with tf.name_scope('conv1') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[11, 11, 3, 64],
                                              stddev=5e-2, wd=None)
@@ -102,7 +100,6 @@ def inference(images):
         pre_activation = tf.nn.bias_add(conv, biases)
         conv1 = tf.nn.relu(pre_activation, name=scope)
         _activation_summary(conv1)
-        parameters += [kernel, biases]
 
     pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name="pool1")
@@ -119,7 +116,6 @@ def inference(images):
         pre_activation = tf.nn.bias_add(conv, biases)
         conv2 = tf.nn.relu(pre_activation, name=scope)
         _activation_summary(conv2)
-        parameters += [kernel, biases]
 
     norm2 = tf.nn.lrn(conv2, depth_radius=2, bias=2.0, alpha=1e-4, beta=0.75,
                       name='norm2')
@@ -137,7 +133,6 @@ def inference(images):
         pre_activation = tf.nn.bias_add(conv, biases)
         conv3 = tf.nn.relu(pre_activation, name=scope)
         _activation_summary(conv3)
-        parameters += [kernel, biases]
 
     with tf.name_scope('conv4') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 384, 256],
@@ -149,7 +144,6 @@ def inference(images):
         pre_activation = tf.nn.bias_add(conv, biases)
         conv4 = tf. nn.relu(pre_activation, name=scope)
         _activation_summary(conv4)
-        parameters += [kernel, biases]
 
     with tf.name_scope('conv5') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 256, 256],
@@ -161,7 +155,6 @@ def inference(images):
         pre_activation = tf.nn.bias_add(conv, biases)
         conv5 = tf.nn.relu(pre_activation, name=scope)
         _activation_summary(conv5)
-        parameters += [kernel, biases]
 
     pool5 = tf.nn.max_pool(input=conv5, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool5')
@@ -224,6 +217,7 @@ def _add_loss_summaries(total_loss):
 
     Args:
         total_loss: Total loss from loss().
+
     Returns:
         loss_averages_op: op for generating moving averages of losses.
     """
@@ -244,13 +238,15 @@ def _add_loss_summaries(total_loss):
 
 
 def train(total_loss, global_step):
-    """Train CIFAR-10 model.
+    """Train the model.
     Create an optimizer and apply to all trainable variables. Add moving
     average for all trainable variables.
+    
     Args:
         total_loss: Total loss from loss().
         global_step: Integer Variable counting the number of training steps
         processed.
+    
     Returns:
         train_op: op for training.
     """
