@@ -3,7 +3,7 @@
 import tensorflow as tf
 
 def input_fn(pipeline):
-    files = tf.data.Dataset.list_files(FLAGS.data.dir)
+    files = tf.data.Dataset.list_files(FLAGS.data_dir)
     """
     TFRecordDataset uses tf.contrib.data.parallel_interleave under the hood
     """
