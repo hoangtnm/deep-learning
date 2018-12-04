@@ -148,8 +148,8 @@ def input_fn(batch_size):
 
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
-    dataset = dataset.map(parser, num_parallel_calls=4)
     dataset = dataset.shuffle(buffer_size=10000)
+    dataset = dataset.map(parser, num_parallel_calls=4)
     dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
     dataset = dataset.batch(batch_size)
     dataset = dataset.prefetch(2)
