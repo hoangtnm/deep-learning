@@ -116,4 +116,46 @@ dataset = files.apply(tf.contrib.data.parallel_interleave(
 - Parallelize the `map` transformation by setting the `num_parallel_calls`
 - If you are working with data stored remotely and / or requiring deserialization, we recommend using the `parallel_interleave` transformation to overlap the reading (and deserialization) of data from different files
 - If the data can fit into memory, use the `cache` transformation to cache it in memory during the first epoch, so that subsequent epochs can avoid the overhead associated with reading, parsing, and transforming it
-- We recommend applying the `shuffle` transformation before the `repeat` transformation, ideally using the fused `shuffle_and_repeat` transformation
+- I recommend applying the `shuffle` transformation before the `repeat` transformation, ideally using the fused `shuffle_and_repeat` transformation
+
+Example code:
+
+```python
+def input_fn(batch_size):
+    filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
+
+    dataset = filenames.apply(tf.contrib.data.parallel_interleave(
+        tf.data.TFRecordDataset, cycle_length=4, sloppy=True))
+
+    # Use `tf.parse_single_example()` to extract data from a `tf.Example`
+    # protocol buffer, and perform any additional per-record preprocessing.
+    # In some cases, `head -n20 /path/to/tfrecords` bash commmand is used to
+    # find out the feature names of a TFRecord
+    def parser(record):
+        features = {
+            "image/encoded": tf.FixedLenFeature((), tf.string, default_value=""),
+            "image/class/label": tf.FixedLenFeature((), tf.int64,
+                                                    default_value=tf.zeros([], dtype=tf.int64)),
+        }
+        parsed = tf.parse_single_example(record, features)
+
+        # Perform additional preprocessing on the parsed data.
+        image = tf.decode_raw(parsed["image/encoded"], tf.float32)
+        image = tf.reshape(image, [224, 224, 3])
+        label = tf.cast(parsed["image/class/label"], tf.int32)
+
+        return {"image": image}, label
+
+    # Use `Dataset.map()` to build a pair of a feature dictionary and a label
+    # tensor for each example.
+    dataset = dataset.map(parser, num_parallel_calls=4)
+    dataset = dataset.shuffle(buffer_size=10000)
+    dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
+    dataset = dataset.batch(batch_size)
+    dataset = dataset.prefetch(2)
+
+    # Each element of `dataset` is tuple containing a dictionary of features
+    # (in which each value is a batch of values for that feature), and a batch of
+    # labels.
+    return dataset
+```
