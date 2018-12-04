@@ -89,7 +89,7 @@ def inference(images):
     Returns:
         softmax_linear
     """
-    with tf.name_scope('conv1') as scope:
+    with tf.variable_scope('conv1') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[11, 11, 3, 64],
                                              stddev=5e-2, wd=None)
         conv = tf.nn.conv2d(input=images, filter=kernel, strides=[1, 4, 4, 1],
@@ -104,7 +104,7 @@ def inference(images):
 
     norm1 = tf.nn.lrn(pool1, bias=2.0, alpha=1e-4, beta=0.75, name='norm1')
 
-    with tf.name_scope('conv2') as scope:
+    with tf.variable_scope('conv2') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[5, 5, 64, 192],
                                              stddev=5e-2, wd=None)
         conv = tf.nn.conv2d(input=norm1, filter=kernel, strides=[1, 1, 1, 1],
@@ -121,7 +121,7 @@ def inference(images):
     pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool2')
 
-    with tf.name_scope('conv3') as scope:
+    with tf.variable_scope('conv3') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 192, 384],
                                              stddev=5e-2, wd=None)
         conv = tf.nn.conv2d(input=pool2, filter=kernel, strides=[1, 1, 1, 1],
@@ -132,7 +132,7 @@ def inference(images):
         conv3 = tf.nn.relu(pre_activation, name=scope)
         _activation_summary(conv3)
 
-    with tf.name_scope('conv4') as scope:
+    with tf.variable_scope('conv4') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 384, 256],
                                              stddev=5e-2, wd=None)
         conv = tf.nn.conv2d(input=conv3, filter=kernel, strides=[1, 1, 1, 1],
@@ -143,7 +143,7 @@ def inference(images):
         conv4 = tf. nn.relu(pre_activation, name=scope)
         _activation_summary(conv4)
 
-    with tf.name_scope('conv5') as scope:
+    with tf.variable_scope('conv5') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 256, 256],
                                              stddev=5e-2, wd=None)
         conv = tf.nn.conv2d(conv4, filter=kernel, strides=[1, 1, 1, 1],
@@ -157,7 +157,7 @@ def inference(images):
     pool5 = tf.nn.max_pool(input=conv5, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool5')
 
-    with tf.name_scope('local6') as scope:
+    with tf.variable_scope('local6') as scope:
         reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
         dim = reshape.get_shape()[1].value
         weights = _variable_with_weight_decay('weights', shape=[dim, 384])
@@ -166,14 +166,14 @@ def inference(images):
         local6 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope)
         _activation_summary(local6)
 
-    with tf.name_scope('local7') as scope:
+    with tf.variable_scope('local7') as scope:
         weights = _variable_with_weight_decay('weights', shape=[dim, 192])
         biases = _variable_on_cpu(
             'biases', [192], tf.constant_initializer(0.0))
         local7 = tf.nn.relu(tf.matmul(local6, weights) + biases, name=scope)
         _activation_summary(local7)
 
-    with tf.name_scope('softmax_linear') as scope:
+    with tf.variable_scope('softmax_linear') as scope:
         weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
                                               stddev=1/192.0, wd=None)
         biases = _variable_on_cpu('biases', [NUM_CLASSES])
