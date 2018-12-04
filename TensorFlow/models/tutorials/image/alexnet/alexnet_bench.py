@@ -154,7 +154,7 @@ def inference(images):
         conv5 = tf.nn.relu(pre_activation, name=scope.name)
         _activation_summary(conv5)
 
-    pool5 = tf.nn.max_pool(input=conv5, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
+    pool5 = tf.nn.max_pool(conv5, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool5')
 
     with tf.variable_scope('local6') as scope:
