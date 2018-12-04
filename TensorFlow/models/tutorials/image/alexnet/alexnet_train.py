@@ -22,69 +22,38 @@ tf.app.flags.DEFINE_integer('log_frequency', 10,
 FLAGS = tf.app.flags.FLAGS
 
 
-def _parser_fn(example_proto):
-    features = {'image/encoded': tf.FixedLenFeature([], tf.string, default_value=""),
-                'image/class/label': tf.FixedLenFeature([], tf.int64, default_value=tf.zeros([], dtype=tf.int64))}
-
-    # Decode the record read by the reader
-    features = tf.parse_single_example(example_proto, features=features)
-
-    # Convert the image data from string back to the numbers
-    image = tf.decode_raw(features['image/encoded'], tf.float32)
-
-    # Cast label data into int32
-    label = tf.cast(features['image/class/label'], tf.int32)
-
-    # Reshape image data into the original shape
-    image = tf.reshape(image, [224, 224, 3])
-
-    return image, label
-
-
-def _input_fn(batch_size=32):
+def input_fn(batch_size=32):
     filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
 
-    # TFRecordDataset uses tf.contrib.data.parallel_interleave under the hood
-    dataset = tf.data.TFRecordDataset(filenames, num_parallel_reads=4)
-    dataset = dataset.shuffle(buffer_size=10000)
-    dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
-    # dataset = dataset.map(_parser_fn, num_parallel_calls=4)
-    dataset = dataset.batch(batch_size)
-    dataset = dataset.prefetch(2)
-
-    # iterator = dataset.make_one_shot_iterator()
-    # next_example, next_label = iterator.get_next()
-
-    return dataset
-
-
-def dataset_input_fn():
-    filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
-    dataset = tf.data.TFRecordDataset(filenames, num_parallel_reads=4)
+    dataset = filenames.apply(tf.contrib.data.parallel_interleave(
+        tf.data.TFRecordDataset, cycle_length=4, sloppy=True))
 
     # Use `tf.parse_single_example()` to extract data from a `tf.Example`
     # protocol buffer, and perform any additional per-record preprocessing.
+    # In some cases, `head -n20 /path/to/tfrecords` bash commmand is used to
+    # find out the feature names of a TFRecord
     def parser(record):
         features = {
             "image/encoded": tf.FixedLenFeature((), tf.string, default_value=""),
-            "image/label": tf.FixedLenFeature((), tf.int64,
-                                              default_value=tf.zeros([], dtype=tf.int64)),
+            "image/class/label": tf.FixedLenFeature((), tf.int64,
+                                                    default_value=tf.zeros([], dtype=tf.int64)),
         }
         parsed = tf.parse_single_example(record, features)
 
         # Perform additional preprocessing on the parsed data.
-        image = tf.image.decode_jpeg(parsed["image/encoded"])
-        image = tf.reshape(image, [224, 224, 1])
-        label = tf.cast(parsed["image/label"], tf.int32)
+        image = tf.decode_raw(parsed["image/encoded"], tf.float32)
+        image = tf.reshape(image, [224, 224, 3])
+        label = tf.cast(parsed["image/class/label"], tf.int32)
 
-        return {"image_data": image}, label
+        return {"image": image}, label
 
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
-    dataset = dataset.map(parser)
     dataset = dataset.shuffle(buffer_size=10000)
+    dataset = dataset.map(parser, num_parallel_calls=4)
     dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
-    dataset = dataset.batch(32)
+    dataset = dataset.batch(batch_size)
+    dataset = dataset.prefetch(2)
 
     # Each element of `dataset` is tuple containing a dictionary of features
     # (in which each value is a batch of values for that feature), and a batch of
@@ -93,11 +62,11 @@ def dataset_input_fn():
 
 
 def train():
-    with tf.Graph().as_default:
+    with tf.Graph().as_default():
         global_step = tf.train.get_or_create_global_step()
 
         with tf.device('/cpu:0'):
-            dataset = _input_fn()
+            dataset = input_fn()
             iterator = dataset.make_one_shot_iterator()
             next_example, next_label = iterator.get_next()
 
