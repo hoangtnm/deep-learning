@@ -125,7 +125,7 @@ def input_fn(batch_size):
     filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
 
     dataset = filenames.apply(tf.contrib.data.parallel_interleave(
-        tf.data.TFRecordDataset, cycle_length=4, sloppy=True))
+        tf.data.TFRecordDataset, cycle_length=FLAGS.num_parallel_readers, sloppy=True))
 
     # Use `tf.parse_single_example()` to extract data from a `tf.Example`
     # protocol buffer, and perform any additional per-record preprocessing.
@@ -149,10 +149,10 @@ def input_fn(batch_size):
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
     dataset = dataset.shuffle(buffer_size=10000)
-    dataset = dataset.map(parser, num_parallel_calls=4)
+    dataset = dataset.map(parser, num_parasllel_calls=FLAGS.num_parallel_calls)
     dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
-    dataset = dataset.batch(batch_size)
-    dataset = dataset.prefetch(2)
+    dataset = dataset.batch(batch_size=FLAGS.batch_size)
+    dataset = dataset.prefetch(buffer_size=FLAGS.prefetch_buffer_size)
 
     # Each element of `dataset` is tuple containing a dictionary of features
     # (in which each value is a batch of values for that feature), and a batch of
