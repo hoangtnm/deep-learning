@@ -8,7 +8,7 @@ import alexnet_bench as alexnet
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('data_dir', '../../data/kaggle/cat_vs_dog',
+tf.app.flags.DEFINE_string('data_dir', '../../../../../data/kaggle/cat_vs_dog',
                            """Directory to TFRecord files""")
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """Directory where to write event logs"""
@@ -45,7 +45,8 @@ def input_fn(batch_size=32):
         image = tf.reshape(image, [224, 224, 3])
         label = tf.cast(parsed["image/class/label"], tf.int32)
 
-        return {"image": image}, label
+        #return {"image": image}, label
+        return image, label
 
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
