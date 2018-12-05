@@ -15,7 +15,7 @@ tf.app.flags.DEFINE_boolean('use_fp16', False,
 
 
 # Global constants describing the CIFAR-10 data set.
-NUM_CLASSES = 2
+NUM_CLASSES = 1
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 25000
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = None
 
