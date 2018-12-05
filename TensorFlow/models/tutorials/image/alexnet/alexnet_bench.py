@@ -161,7 +161,7 @@ def inference(images):
     with tf.variable_scope('local6') as scope:
         incoming_layer = tf.convert_to_tensor(pool5)
         #reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
-        reshape = tf.reshape(incoming_layer, [incoming_layer.get_shape().as_list()[0], -1])
+        reshape = tf.reshape(incoming_layer, [images.get_shape().as_list()[0], -1])
         dim = reshape.get_shape()[1].value
         #dim = incoming_layer.shape.dims[-1].value
         weights = _variable_with_weight_decay('weights', shape=[dim, 384],
