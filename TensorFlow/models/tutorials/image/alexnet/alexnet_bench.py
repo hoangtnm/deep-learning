@@ -64,7 +64,8 @@ def _variable_on_cpu(name, shape, initializer):
     """
     with tf.device('/cpu:0'):
         dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
-        var = tf.get_variable(name, shape, initializer=initializer, dtype=dtype)
+        var = tf.get_variable(
+            name, shape, initializer=initializer, dtype=dtype)
         return var
 
 
@@ -158,19 +159,25 @@ def inference(images):
                            padding='VALID', name='pool5')
 
     with tf.variable_scope('local6') as scope:
-        reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
-        dim = reshape.get_shape()[1].value
-        weights = _variable_with_weight_decay('weights', shape=[dim, 384])
+        #reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
+        #dim = reshape.get_shape()[1].value
+        incoming_layer = tf.convert_to_tensor(pool5)
+        dim = incoming_layer.shape.dims[-1].value
+        weights = _variable_with_weight_decay('weights', shape=[dim, 384],
+                                              stddev=0.04, wd=0.004)
         biases = _variable_on_cpu(
             'biases', [384], tf.constant_initializer(0.0))
-        local6 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
+        local6 = tf.nn.relu(tf.matmul(incoming_layer, weights) +
+                            biases, name=scope.name)
         _activation_summary(local6)
 
     with tf.variable_scope('local7') as scope:
-        weights = _variable_with_weight_decay('weights', shape=[dim, 192])
+        weights = _variable_with_weight_decay('weights', shape=[dim, 192],
+                                              stddev=0.04, wd=0.004)
         biases = _variable_on_cpu(
             'biases', [192], tf.constant_initializer(0.0))
-        local7 = tf.nn.relu(tf.matmul(local6, weights) + biases, name=scope.name)
+        local7 = tf.nn.relu(tf.matmul(local6, weights) +
+                            biases, name=scope.name)
         _activation_summary(local7)
 
     with tf.variable_scope('softmax_linear') as scope:
@@ -239,12 +246,12 @@ def train(total_loss, global_step):
     """Train the model.
     Create an optimizer and apply to all trainable variables. Add moving
     average for all trainable variables.
-    
+
     Args:
         total_loss: Total loss from loss().
         global_step: Integer Variable counting the number of training steps
         processed.
-    
+
     Returns:
         train_op: op for training.
     """
