@@ -91,7 +91,7 @@ def train():
 
             def before_run(self, run_context):
                 self._step += 1
-                return tf.train.SessionRunHook(loss)  # Asks for loss value
+                return tf.train.SessionRunArgs(loss)  # Asks for loss value
 
             def after_run(self, run_context, run_values):
                 if self._step % FLAGS.log_frequency == 0:
