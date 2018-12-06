@@ -169,7 +169,7 @@ def inference(images):
         #reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
         reshape = flatten(pool5)
         reshape = tf.cast(reshape, tf.float32)
-        #reshape = tf.reshape(
+        # reshape = tf.reshape(
         #    flatten, [images.get_shape().as_list()[0], -1])
         dim = reshape.get_shape()[1].value
         #dim = incoming_layer.shape.dims[-1].value
@@ -193,7 +193,8 @@ def inference(images):
     with tf.variable_scope('softmax_linear') as scope:
         weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
                                               stddev=1/192.0, wd=None)
-        biases = _variable_on_cpu('biases', [NUM_CLASSES])
+        biases = _variable_on_cpu(
+            'biases', [NUM_CLASSES], tf.constant_initializer(0.0))
         softmax_linear = tf.add(
             tf.matmul(local7, weights), biases, name=scope.name
         )
