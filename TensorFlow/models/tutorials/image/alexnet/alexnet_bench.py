@@ -3,6 +3,7 @@ import re
 import datetime
 import time
 import tensorflow as tf
+import numpy as np
 
 
 FLAGS = tf.app.flags.FLAGS
@@ -79,6 +80,11 @@ def _variable_with_weight_decay(name, shape, stddev, wd):
         weight_decay = tf.multiply(tf.nn.l2_loss(var), wd, name='weight_loss')
         tf.add_to_collection('losses', weight_decay)
     return var
+
+
+def flatten(incoming, name=None):
+    flat_shape = [-1, np.prod(incoming.shape[1:]).value]
+    return tf.reshape(incoming, flat_shape)
 
 
 def inference(images):
@@ -159,16 +165,19 @@ def inference(images):
                            padding='VALID', name='pool5')
 
     with tf.variable_scope('local6') as scope:
-        incoming_layer = tf.convert_to_tensor(pool5)
+        #incoming_layer = tf.convert_to_tensor(pool5)
         #reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
-        reshape = tf.reshape(incoming_layer, [images.get_shape().as_list()[0], -1])
+        reshape = flatten(pool5)
+        reshape = tf.cast(reshape, tf.float32)
+        #reshape = tf.reshape(
+        #    flatten, [images.get_shape().as_list()[0], -1])
         dim = reshape.get_shape()[1].value
         #dim = incoming_layer.shape.dims[-1].value
         weights = _variable_with_weight_decay('weights', shape=[dim, 384],
                                               stddev=0.04, wd=0.004)
         biases = _variable_on_cpu(
             'biases', [384], tf.constant_initializer(0.0))
-        local6 = tf.nn.relu(tf.matmul(incoming_layer, weights) +
+        local6 = tf.nn.relu(tf.matmul(reshape, weights) +
                             biases, name=scope.name)
         _activation_summary(local6)
 
