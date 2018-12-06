@@ -82,7 +82,7 @@ def train():
         # updating the model parameters
         train_op = alexnet.train(loss, global_step)
 
-        class _LoggerHook(tf.train.SessionHook):
+        class _LoggerHook(tf.train.SessionRunHook):
             """Logs loss and runtime"""
 
             def begin(self):
@@ -91,7 +91,7 @@ def train():
 
             def before_run(self, run_context):
                 self._step += 1
-                return tf.train.SessionHook(loss)  # Asks for loss value
+                return tf.train.SessionRunHook(loss)  # Asks for loss value
 
             def after_run(self, run_context, run_values):
                 if self._step % FLAGS.log_frequency == 0:
