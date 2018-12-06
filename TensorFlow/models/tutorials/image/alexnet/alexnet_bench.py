@@ -306,16 +306,3 @@ def train(total_loss, global_step):
             tf.trainable_variables())
 
     return variables_averages_op
-
-
-def time_tensorflow_run(session, target, info_string):
-    """Run the computation to obtain the target tensor and print timing stats
-
-    Args:
-        session: the TensorFlow session to run the computation under
-        target: the target Tensor that is passed to the session's run() function
-        info_string: a string summarizing this run, to be printed with the stats
-
-    Return:
-        None
-    """
