@@ -182,7 +182,7 @@ def inference(images):
         _activation_summary(local6)
 
     with tf.variable_scope('local7') as scope:
-        weights = _variable_with_weight_decay('weights', shape=[dim, 192],
+        weights = _variable_with_weight_decay('weights', shape=[384, 192],
                                               stddev=0.04, wd=0.004)
         biases = _variable_on_cpu(
             'biases', [192], tf.constant_initializer(0.0))
