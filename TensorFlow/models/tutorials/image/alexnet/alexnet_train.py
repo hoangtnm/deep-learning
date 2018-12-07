@@ -8,7 +8,7 @@ import alexnet_bench as alexnet
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('data_dir', '../../../../../data/kaggle/cat_vs_dog',
+tf.app.flags.DEFINE_string('data_dir', '../../../../../data/kaggle/cat_vs_dog/train.tfrecord',
                            """Directory to TFRecord files""")
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """Directory where to write event logs"""
@@ -24,8 +24,10 @@ tf.app.flags.DEFINE_integer('log_frequency', 10,
 def input_fn(batch_size=32):
     filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
 
-    dataset = filenames.apply(tf.contrib.data.parallel_interleave(
-        tf.data.TFRecordDataset, cycle_length=4, sloppy=True))
+    dataset = filenames.apply(
+        tf.data.experimental.parallel_interleave(
+            lambda filename: tf.data.TFRecordDataset(filename),
+            cycle_length=4, sloppy=True))
 
     # Use `tf.parse_single_example()` to extract data from a `tf.Example`
     # protocol buffer, and perform any additional per-record preprocessing.
@@ -44,7 +46,7 @@ def input_fn(batch_size=32):
         image = tf.reshape(image, [224, 224, 3])
         label = tf.cast(parsed["image/class/label"], tf.int32)
 
-        #return {"image": image}, label
+        # return {"image": image}, label
         return image, label
 
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
@@ -52,7 +54,7 @@ def input_fn(batch_size=32):
     dataset = dataset.shuffle(buffer_size=10000)
     dataset = dataset.map(parser, num_parallel_calls=4)
     dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
-    dataset = dataset.batch(batch_size)
+    dataset = dataset.batch(batch_size, drop_remainder=True)
     dataset = dataset.prefetch(2)
 
     # Each element of `dataset` is tuple containing a dictionary of features
@@ -113,8 +115,8 @@ def train():
             hooks=[tf.train.StopAtStepHook(last_step=FLAGS.NUM_EPOCHS),
                    tf.train.NanTensorHook(loss),
                    _LoggerHook()],
-            config=tf.ConfigProto(
-                log_device_placement=FLAGS.log_device_placement)) as mon_sess:
+            config=tf.ConfigProto(log_device_placement=False,
+                                  gpu_options=tf.GPUOptions(allow_growth=True))) as mon_sess:
             while not mon_sess.should_stop():
                 mon_sess.run(train_op)
 
