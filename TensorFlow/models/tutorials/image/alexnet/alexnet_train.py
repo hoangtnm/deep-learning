@@ -25,7 +25,7 @@ def input_fn(batch_size=32):
     filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
 
     dataset = filenames.apply(
-        tf.data.experimental.parallel_interleave(
+        tf.contrib.data.parallel_interleave(
             lambda filename: tf.data.TFRecordDataset(filename),
             cycle_length=4, sloppy=True))
 
