@@ -22,6 +22,7 @@ tf.app.flags.DEFINE_integer('log_frequency', 10,
 
 
 def input_fn(batch_size=32):
+    # Read records from a list of files
     filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
 
     dataset = filenames.apply(
@@ -42,19 +43,28 @@ def input_fn(batch_size=32):
         parsed = tf.parse_single_example(record, features)
 
         # Perform additional preprocessing on the parsed data.
-        image = tf.decode_raw(parsed["image/encoded"], tf.float32)
-        image = tf.reshape(image, [224, 224, 3])
+        image_decoded = tf.decode_raw(parsed["image/encoded"], tf.float32)
+        image_resized = tf.reshape(image_decoded, [224, 224, 3])
         label = tf.cast(parsed["image/class/label"], tf.int32)
 
-        # return {"image": image}, label
-        return image, label
+        #return {"image_data": image}, label
+        return image_resized, label
 
+    # Randomly shuffle using a buffer of 10000 examples
+    dataset = dataset.shuffle(buffer_size=10000)
+    
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
-    dataset = dataset.shuffle(buffer_size=10000)
+    # Parse string values into tensors
     dataset = dataset.map(parser, num_parallel_calls=4)
+    
+    # Repeat for FLAGS.NUM_EPOCHS epochs
     dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
+
+    # Combine batch_size consecutive elements into a batch
     dataset = dataset.batch(batch_size, drop_remainder=True)
+
+    # Use prefetch() to overlap the producer and consumer
     dataset = dataset.prefetch(2)
 
     # Each element of `dataset` is tuple containing a dictionary of features
@@ -70,14 +80,15 @@ def train():
         with tf.device('/cpu:0'):
             dataset = input_fn()
             iterator = dataset.make_one_shot_iterator()
-            next_example, next_label = iterator.get_next()
+            next_examples, next_labels = iterator.get_next()
+            # next_example, next_label = next_element['image_resized'], next_element['label']
 
         # Build a Graph computing logits prediction from the
         # inference model
-        logits = alexnet.inference(next_example)
+        logits = alexnet.inference(next_examples)
 
         # Calculate loss
-        loss = alexnet.loss(logits, next_label)
+        loss = alexnet.loss(logits, next_labels)
 
         # Build a Graph training the model with one batch of examples and
         # updating the model parameters
