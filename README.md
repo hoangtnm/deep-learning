@@ -1,4 +1,6 @@
-# Intel-Convolutional_Neural_Networks
+***********************************
+Intel-Convolutional_Neural_Networks
+***********************************
 
 .. image:: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
     :target: https://github.com/easy-tensorflow/easy-tensorflow/pulls
@@ -12,5 +14,3 @@
       :target: https://github.com/easy-tensorflow/easy-tensorflow/graphs/contributors
 .. image:: https://img.shields.io/github/issues/Naereen/StrapDown.js.svg
       :target: https://github.com/easy-tensorflow/easy-tensorflow/issues
-
-Soure code for CNN
