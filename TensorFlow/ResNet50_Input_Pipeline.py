@@ -1,6 +1,5 @@
-#! /usr/bin/python
-
 import tensorflow as tf
+
 
 def input_fn(pipeline):
     files = tf.data.Dataset.list_files(FLAGS.data_dir)
@@ -19,6 +18,7 @@ def input_fn(pipeline):
     dataset = dataset.prefetch(2)
 
     return dataset
+
 
 def input_fn(batch_size):
     files = tf.data.Dataset.list_files(FLAGS.data_dir)
