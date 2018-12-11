@@ -6,6 +6,9 @@ import time
 import tensorflow as tf
 import alexnet_bench as alexnet
 
+# Uncomment to use GPU(s) instead of CPU
+# os.environ['CUDA_VISIBLE_DEVICES'] = ''
+
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('data_dir', '../../../../../data/kaggle/cat_vs_dog/train.tfrecord',
