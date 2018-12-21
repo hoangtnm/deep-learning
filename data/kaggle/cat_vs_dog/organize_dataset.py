@@ -30,7 +30,7 @@ def _organize_data(data_dir):
     label_list = ['cat', 'dog']
     for label in label_list:
         # Creates a new folder for each label
-        os.mkdir(label)
+        os.mkdir(f'{data_dir}/{label}')
         
         # Returns a list of paths matching a pathname pattern
         image_file_path = f'{data_dir}/{label}*.jpg'
@@ -38,7 +38,7 @@ def _organize_data(data_dir):
         
         # Creates the new folder structure with images
         for image in matching_files:
-            shutil.copy2(image, f'./{label}')
+            shutil.copy2(image, f'{data_dir}/{label}')
 
 
 def main(unused_argv):
