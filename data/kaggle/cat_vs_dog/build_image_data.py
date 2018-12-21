@@ -98,10 +98,9 @@ def _create_labels_file(data_dir):
         class_text: list, unique labels
 
     """
-    jpeg_file_path = f'{FLAGS.train_directory}/*.jpg'
+    jpeg_file_path = f'{data_dir}/*.jpg'
     matching_files = tf.gfile.Glob(jpeg_file_path)
 
-    class_labels = [1 if 'cat' in addr else 2 for addr in matching_files]
     class_text = ['cat' if 'cat' in addr else 'dog' for addr in matching_files]
 
     # Write labels_file
@@ -114,38 +113,38 @@ def _create_labels_file(data_dir):
         for unique_label_text in output:
             writer.write(f'{unique_label_text}\n')
 
-    return class_labels, class_text
+    return None
 
 
 def _find_image_files(data_dir, labels_file):
     """Build a list of all images files and labels in the data set.
 
     Args:
-      data_dir: string, path to the root directory of images.
+        data_dir: string, path to the root directory of images.
 
-        Assumes that the image data set resides in JPEG files located in
-        the following directory structure.
+            Assumes that the image data set resides in JPEG files located in
+            the following directory structure.
 
-          data_dir/dog/image0.JPEG
-          data_dir/dog/image1.jpg
+            data_dir/dog/image0.JPEG
+            data_dir/dog/image1.jpg
 
-        where 'dog' is the label associated with these images.
+            where 'dog' is the label associated with these images.
 
-      labels_file: string, path to the labels file.
+        labels_file: string, path to the labels file.
 
-        The list of valid labels are held in this file. Assumes that the file
-        contains entries as such:
-          dog
-          cat
-        where each line corresponds to a label. We map each label contained in
-        the file to an integer starting with the integer 0 corresponding to the
-        label contained in the first line.
+            The list of valid labels are held in this file. Assumes that the file
+            contains entries as such:
+            dog
+            cat
+            where each line corresponds to a label. We map each label contained in
+            the file to an integer starting with the integer 0 corresponding to the
+            label contained in the first line.
 
     Returns:
-      filenames: list of strings; each string is a path to an image file.
-      texts: list of strings; each string is the class, e.g. 'dog'
-      labels: list[l.strip() for l in tf.gfile.GFile(
-        labels_file, 'r').readlines()] of integer; each integer identifies the ground truth.
+        filenames: list of strings; each string is a path to an image file.
+        texts: list of strings; each string is the class, e.g. 'dog'
+        labels: list[l.strip() for l in tf.gfile.GFile(
+            labels_file, 'r').readlines()] of integer; each integer identifies the ground truth.
     """
     print(f'Determining list of input files and labels from {data_dir}.')
     unique_labels = [l.strip() for l in tf.gfile.GFile(
@@ -381,11 +380,11 @@ def _process_image_files(name, filenames, texts, labels, num_shards):
     """Process and save list of images as TFRecord of Example protos.
 
     Args:
-      name: string, unique identifier specifying the data set
-      filenames: list of strings; each string is a path to an image file
-      texts: list of strings; each string is human readable, e.g. 'dog'
-      labels: list of integer; each integer identifies the ground truth
-      num_shards: integer number of shards for this data set.
+        name: string, unique identifier specifying the data set
+        filenames: list of strings; each string is a path to an image file
+        texts: list of strings; each string is human readable, e.g. 'dog'
+        labels: list of integer; each integer identifies the ground truth
+        num_shards: integer number of shards for this data set.
     """
     assert len(filenames) == len(texts)
     assert len(filenames) == len(labels)
