@@ -6,18 +6,24 @@ import time
 import tensorflow as tf
 import alexnet_bench as alexnet
 
-# Uncomment to use GPU(s) instead of CPU
+# Uncomment to use CPU instead of GPU(s)
 # os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('data_dir', '../../../../../data/kaggle/cat_vs_dog/train.tfrecord',
                            """Directory to TFRecord files""")
-tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
+tf.app.flags.DEFINE_string('train_dir', '/tmp/alexnet_train',
                            """Directory where to write event logs"""
                            """and checkpoint.""")
-tf.app.flags.DEFINE_integer('NUM_EPOCHS', 100000,
-                            """Number of epochs to run.""")
+tf.app.flags.DEFINE_integer('cycle_length', 4,
+                            """Number of datasets to overlap for parallel I/O.""")
+tf.app.flags.DEFINE_integer('num_parallel_calls', 4,
+                            """Number of CPU cores for the pre-processing.""")
+tf.app.flags.DEFINE_integer('max_step', 100000,
+                            """Number of steps to run.""")
+tf.app.flags.DEFINE_integer('num_epochs', 100000,
+                            """Number of steps to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 tf.app.flags.DEFINE_integer('log_frequency', 10,
@@ -31,7 +37,7 @@ def input_fn(batch_size=32):
     dataset = filenames.apply(
         tf.contrib.data.parallel_interleave(
             lambda filename: tf.data.TFRecordDataset(filename),
-            cycle_length=4, sloppy=True))
+            cycle_length=FLAGS.cycle_length, sloppy=True))
 
     # Use `tf.parse_single_example()` to extract data from a `tf.Example`
     # protocol buffer, and perform any additional per-record preprocessing.
@@ -50,19 +56,18 @@ def input_fn(batch_size=32):
         image_resized = tf.reshape(image_decoded, [224, 224, 3])
         label = tf.cast(parsed["image/class/label"], tf.int32)
 
-        #return {"image_data": image}, label
-        return image_resized, label
+        return {'image_data': image_resized}, label
 
     # Randomly shuffle using a buffer of 10000 examples
     dataset = dataset.shuffle(buffer_size=10000)
-    
+
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
     # Parse string values into tensors
-    dataset = dataset.map(parser, num_parallel_calls=4)
-    
+    dataset = dataset.map(parser, num_parallel_calls=FLAGS.num_parallel_calls)
+
     # Repeat for FLAGS.NUM_EPOCHS epochs
-    dataset = dataset.repeat(FLAGS.NUM_EPOCHS)
+    dataset = dataset.repeat(FLAGS.num_epochs)
 
     # Combine batch_size consecutive elements into a batch
     dataset = dataset.batch(batch_size, drop_remainder=True)
@@ -84,11 +89,10 @@ def train():
             dataset = input_fn()
             iterator = dataset.make_one_shot_iterator()
             next_examples, next_labels = iterator.get_next()
-            # next_example, next_label = next_element['image_resized'], next_element['label']
 
         # Build a Graph computing logits prediction from the
         # inference model
-        logits = alexnet.inference(next_examples)
+        logits = alexnet.inference(next_examples['image_data'])
 
         # Calculate loss
         loss = alexnet.loss(logits, next_labels)
@@ -125,8 +129,8 @@ def train():
                                         loss_value, example_per_sec, sec_per_batch))
 
         with tf.train.MonitoredTrainingSession(
-            checkpoint_dir=FLAGS.train_dir,
-            hooks=[tf.train.StopAtStepHook(last_step=FLAGS.NUM_EPOCHS),
+            # checkpoint_dir=FLAGS.train_dir,
+            hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_step),
                    tf.train.NanTensorHook(loss),
                    _LoggerHook()],
             config=tf.ConfigProto(log_device_placement=False,

@@ -15,7 +15,7 @@ tf.app.flags.DEFINE_boolean('use_fp16', False,
                             """Train the model using fp16.""")
 
 
-# Global constants describing the CIFAR-10 data set.
+# Global constants describing the data set.
 NUM_CLASSES = 1
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 25000
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = None
@@ -25,7 +25,7 @@ NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = None
 MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
 NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
 LEARNING_RATE_DECAY_FACTOR = 0.1  # Learning rate decay factor.
-INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
+INITIAL_LEARNING_RATE = 0.001     # Initial learning rate.
 
 # If a model is trained with multiple GPUs, prefix all Op names with tower_name
 # to differentiate the operations. Note that this prefix is removed from the
@@ -35,6 +35,7 @@ TOWER_NAME = 'tower'
 
 def _activation_summary(x):
     """Helper to create summaries for activations.
+
     Creates a summary that provides a histogram of activations.
     Creates a summary that measures the sparsity of activations.
 
@@ -71,6 +72,21 @@ def _variable_on_cpu(name, shape, initializer):
 
 
 def _variable_with_weight_decay(name, shape, stddev, wd):
+    """Helper to create an initialized Variable with weight decay.
+
+    Note that the Variable is initialized with a truncated normal distribution.
+    A weight decay is added only if one is specified.
+
+    Args:
+        name: name of the variable
+        shape: list of ints
+        stddev: standard deviation of a truncated Gaussian
+        wd: add L2Loss weight decay multiplied by this float. If None, weight
+            decay is not added for this Variable.
+
+    Returns:
+        Variable Tensor
+    """
     dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
     var = _variable_on_cpu(
         name,
@@ -88,7 +104,7 @@ def flatten(incoming, name=None):
 
 
 def inference(images):
-    """Build AlexNet model
+    """Build AlexNet model.
 
     Args:
         images: image tensor
@@ -96,6 +112,10 @@ def inference(images):
     Returns:
         softmax_linear
     """
+
+    # Check input Tensor shape
+    assert images.get_shape().as_list() == [None, 224, 224, 3]
+
     with tf.variable_scope('conv1') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[11, 11, 3, 64],
                                              stddev=5e-2, wd=None)
@@ -104,7 +124,7 @@ def inference(images):
         biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv, biases)
         conv1 = tf.nn.relu(pre_activation, name=scope.name)
-        #_activation_summary(conv1)
+        # _activation_summary(conv1)
 
     pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name="pool1")
@@ -120,7 +140,7 @@ def inference(images):
             'biases', [192], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv, biases)
         conv2 = tf.nn.relu(pre_activation, name=scope.name)
-        #_activation_summary(conv2)
+        # _activation_summary(conv2)
 
     norm2 = tf.nn.lrn(conv2, depth_radius=2, bias=2.0, alpha=1e-4, beta=0.75,
                       name='norm2')
@@ -137,7 +157,7 @@ def inference(images):
             'biases', [384], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv, biases)
         conv3 = tf.nn.relu(pre_activation, name=scope.name)
-        #_activation_summary(conv3)
+        # _activation_summary(conv3)
 
     with tf.variable_scope('conv4') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 384, 256],
@@ -148,7 +168,7 @@ def inference(images):
             'biases', [256], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv, biases)
         conv4 = tf. nn.relu(pre_activation, name=scope.name)
-        #_activation_summary(conv4)
+        # _activation_summary(conv4)
 
     with tf.variable_scope('conv5') as scope:
         kernel = _variable_with_weight_decay('weights', shape=[3, 3, 256, 256],
@@ -159,27 +179,24 @@ def inference(images):
             'biases', [256], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv, biases)
         conv5 = tf.nn.relu(pre_activation, name=scope.name)
-        #_activation_summary(conv5)
+        # _activation_summary(conv5)
 
     pool5 = tf.nn.max_pool(conv5, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool5')
 
     with tf.variable_scope('local6') as scope:
-        #incoming_layer = tf.convert_to_tensor(pool5)
-        #reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
-        reshape = flatten(pool5)
-        reshape = tf.cast(reshape, tf.float32)
-        # reshape = tf.reshape(
-        #    flatten, [images.get_shape().as_list()[0], -1])
+        # Move everything into depth so we can perform a single matrix multiply.
+        reshape = tf.reshape(pool5, [images.get_shape().as_list()[0], -1])
+        # reshape = flatten(pool5)
+        # reshape = tf.cast(reshape, tf.float32)
         dim = reshape.get_shape()[1].value
-        #dim = incoming_layer.shape.dims[-1].value
         weights = _variable_with_weight_decay('weights', shape=[dim, 384],
                                               stddev=0.04, wd=0.004)
         biases = _variable_on_cpu(
             'biases', [384], tf.constant_initializer(0.0))
         local6 = tf.nn.relu(tf.matmul(reshape, weights) +
                             biases, name=scope.name)
-        #_activation_summary(local6)
+        # _activation_summary(local6)
 
     with tf.variable_scope('local7') as scope:
         weights = _variable_with_weight_decay('weights', shape=[384, 192],
@@ -188,8 +205,12 @@ def inference(images):
             'biases', [192], tf.constant_initializer(0.0))
         local7 = tf.nn.relu(tf.matmul(local6, weights) +
                             biases, name=scope.name)
-        #_activation_summary(local7)
+        # _activation_summary(local7)
 
+    # linear layer(WX + b),
+    # We don't apply softmax here because
+    # tf.nn.sparse_softmax_cross_entropy_with_logits accepts the unscaled logits
+    # and performs the softmax internally for efficiency.
     with tf.variable_scope('softmax_linear') as scope:
         weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
                                               stddev=1/192.0, wd=None)
@@ -198,19 +219,21 @@ def inference(images):
         softmax_linear = tf.add(
             tf.matmul(local7, weights), biases, name=scope.name
         )
-        _activation_summary(softmax_linear)
+        # _activation_summary(softmax_linear)
 
     return softmax_linear
 
 
 def loss(logits, labels):
     """Add L2Loss to all the trainable variables.
+
     Add summary for "Loss" and "Loss/avg".
 
     Args:
         logits: Logits from inference().
-        labels: Labels from distorted_inputs or inputs(). 1-D tensor
+        labels: Labels from distorted_inputs or input_fn(). 1-D tensor
                 of shape [batch_size]
+
     Returns:
         Loss tensor of type float.
     """
@@ -228,6 +251,7 @@ def loss(logits, labels):
 
 def _add_loss_summaries(total_loss):
     """Add summaries for losses in the model.
+
     Generates moving average for all losses and associated summaries for
     visualizing the performance of the network.
 
@@ -254,7 +278,8 @@ def _add_loss_summaries(total_loss):
 
 
 def train(total_loss, global_step):
-    """Train the model.
+    """Train AlexNet model.
+
     Create an optimizer and apply to all trainable variables. Add moving
     average for all trainable variables.
 
