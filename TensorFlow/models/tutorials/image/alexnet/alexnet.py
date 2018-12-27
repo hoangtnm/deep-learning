@@ -300,6 +300,7 @@ def train(total_loss, global_step):
 
     # Compute gradients.
     with tf.control_dependencies([loss_averages_op]):
+        # `opt` and `grads` will only run after `loss_averages_op` have executed.
         opt = tf.train.RMSPropOptimizer(lr)
         grads = opt.compute_gradients(total_loss)
 
@@ -319,6 +320,7 @@ def train(total_loss, global_step):
     variable_averages = tf.train.ExponentialMovingAverage(
         MOVING_AVERAGE_DECAY, global_step)
     with tf.control_dependencies([apply_gradient_op]):
+        # `variables_averages_op` will only run after `apply_gradient_op` have executed.
         variables_averages_op = variable_averages.apply(
             tf.trainable_variables())
 
