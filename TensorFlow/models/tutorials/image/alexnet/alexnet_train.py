@@ -4,7 +4,7 @@ from datetime import datetime
 import time
 
 import tensorflow as tf
-import alexnet_bench as alexnet
+import alexnet
 
 # Uncomment to use CPU instead of GPU(s)
 # os.environ['CUDA_VISIBLE_DEVICES'] = ''
@@ -126,7 +126,7 @@ def train():
 
                     print(
                         f'{datetime.now()}: step {self._step}, loss = {loss_value:.2f} '
-                        '({example_per_sec:.1f} examples/sec; {sec_per_batch:.3f} sec/batch)'
+                        f'({example_per_sec:.1f} examples/sec; {sec_per_batch:.3f} sec/batch)'
                     )
 
         with tf.train.MonitoredTrainingSession(
