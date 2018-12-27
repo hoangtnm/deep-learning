@@ -30,7 +30,7 @@ tf.app.flags.DEFINE_integer('log_frequency', 10,
                             """How often to log results to the console.""")
 
 
-def input_fn(batch_size=32):
+def input_fn(batch_size):
     # Read records from a list of files
     filenames = tf.data.Dataset.list_files(FLAGS.data_dir)
 
@@ -52,8 +52,10 @@ def input_fn(batch_size=32):
         parsed = tf.parse_single_example(record, features)
 
         # Perform additional preprocessing on the parsed data.
-        image_decoded = tf.decode_raw(parsed["image/encoded"], tf.float32)
-        image_resized = tf.reshape(image_decoded, [224, 224, 3])
+        image_decoded = tf.image.decode_jpeg(parsed["image/encoded"])
+        image_resized = tf.image.resize_image_with_pad(
+            image_decoded, target_height=224, target_width=224)
+        image_resized = tf.cast(image_resized, tf.float32)
         label = tf.cast(parsed["image/class/label"], tf.int32)
 
         return {'image_data': image_resized}, label
@@ -86,7 +88,7 @@ def train():
         global_step = tf.train.get_or_create_global_step()
 
         with tf.device('/cpu:0'):
-            dataset = input_fn()
+            dataset = input_fn(FLAGS.batch_size)
             iterator = dataset.make_one_shot_iterator()
             next_examples, next_labels = iterator.get_next()
 
@@ -122,14 +124,13 @@ def train():
                     example_per_sec = FLAGS.log_frequency * FLAGS.batch_size / duration
                     sec_per_batch = float(duration / FLAGS.log_frequency)
 
-                    format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f '
-                                  'sec/batch)')
-
-                    print(format_str % (datetime.now(), self._step,
-                                        loss_value, example_per_sec, sec_per_batch))
+                    print(
+                        f'{datetime.now()}: step {self._step}, loss = {loss_value:.2f} '
+                        '({example_per_sec:.1f} examples/sec; {sec_per_batch:.3f} sec/batch)'
+                    )
 
         with tf.train.MonitoredTrainingSession(
-            # checkpoint_dir=FLAGS.train_dir,
+            checkpoint_dir=FLAGS.train_dir,
             hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_step),
                    tf.train.NanTensorHook(loss),
                    _LoggerHook()],
