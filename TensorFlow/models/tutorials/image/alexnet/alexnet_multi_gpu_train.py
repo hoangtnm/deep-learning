@@ -185,7 +185,7 @@ def train():
         tower_grads = []
         with tf.variable_scope(tf.get_variable_scope()):
             for i in xrange(FLAGS.num_gpus):
-                with tf.device(f'/gpu:[{i}]'):
+                with tf.device(f'/gpu:{i}'):
                     with tf.name_scope(f'{alexnet.TOWER_NAME}_{i}') as scope:
                         # Dequeues one batch for the GPU
                         # image_batch, label_batch = batch_queue.dequeue()
