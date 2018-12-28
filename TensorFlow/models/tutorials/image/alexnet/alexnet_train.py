@@ -128,7 +128,10 @@ def train():
                         f'{datetime.now()}: step {self._step}, loss = {loss_value:.2f} '
                         f'({example_per_sec:.1f} examples/sec; {sec_per_batch:.3f} sec/batch)'
                     )
-
+                    
+        # Automatically initializes and/or restores variables before returning
+        # MonitoredSession.run() automatically recovers from PS failure,
+        # and can run additional code in hooks
         with tf.train.MonitoredTrainingSession(
             checkpoint_dir=FLAGS.train_dir,
             hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_step),
