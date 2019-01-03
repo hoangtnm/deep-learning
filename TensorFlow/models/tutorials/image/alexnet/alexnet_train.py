@@ -43,7 +43,7 @@ def input_fn(batch_size):
     # protocol buffer, and perform any additional per-record preprocessing.
     # In some cases, `head -n20 /path/to/tfrecords` bash commmand is used to
     # find out the feature names of a TFRecord
-    def parser(record):
+    def parser_fn(record):
         features = {
             "image/encoded": tf.FixedLenFeature((), tf.string, default_value=""),
             "image/class/label": tf.FixedLenFeature((), tf.int64,
@@ -60,19 +60,17 @@ def input_fn(batch_size):
 
         return {'image_data': image_resized}, label
 
-    # Randomly shuffle using a buffer of 10000 examples
-    dataset = dataset.shuffle(buffer_size=10000)
+    # Shuffles and repeats a Dataset returning a new permutation for each epoch
+    dataset = dataset.apply(
+        tf.data.experimental.shuffle_and_repeat(buffer_size=10000, count=FLAGS.num_epochs)
+    )
 
     # Use `Dataset.map()` to build a pair of a feature dictionary and a label
     # tensor for each example.
     # Parse string values into tensors
-    dataset = dataset.map(parser, num_parallel_calls=FLAGS.num_parallel_calls)
-
-    # Repeat for FLAGS.NUM_EPOCHS epochs
-    dataset = dataset.repeat(FLAGS.num_epochs)
-
-    # Combine batch_size consecutive elements into a batch
-    dataset = dataset.batch(batch_size, drop_remainder=True)
+    dataset = dataset.apply(
+        tf.data.experimental.map_and_batch(map_func=parser_fn, batch_size=batch_size, drop_remainder=True)
+    )
 
     # Use prefetch() to overlap the producer and consumer
     dataset = dataset.prefetch(2)
