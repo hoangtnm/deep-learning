@@ -158,11 +158,11 @@ def conv_block(input_tensor,
 
 
 def resnet50(num_classes):
-    # TODO(tfboyd): add training argument, just lik resnet56.
+    # TODO(tfboyd): add training argument, just like resnet56.
     """Instantiates the ResNet50 architecture.
 
     Args:
-    num_classes: `int` number of classes for image classification.
+        num_classes: `int` number of classes for image classification.
 
     Returns:
         A Keras model instance.
