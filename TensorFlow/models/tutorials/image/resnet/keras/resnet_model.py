@@ -9,7 +9,6 @@ Related papers/blogs:
 - http://torch.ch/blog/2016/02/04/resnets.html
 
 """
-
 from tensorflow.python.keras import backend
 from tensorflow.python.keras import layers
 from tensorflow.python.keras import models
