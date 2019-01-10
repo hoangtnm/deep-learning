@@ -42,7 +42,7 @@ python cifar10_multi_gpu_train.py --num_gpus=2
 API is an easy way to distribute your training
 across multiple devices/machines. Its goal is to allow users to use existing
 models and training code with minimal changes to enable distributed training.
-Moreover, TensorFlow've designed the API in such a way that it works with both eager and
+Moreover, TensorFlow's designed the API in such a way that it works with both eager and
 graph execution.
 
 Currently TensorFlow supports several types of strategies:
@@ -129,8 +129,8 @@ That's all you need to train your model with Keras on multiple GPUs with
 the input dataset, replicating layers and variables on each device, and
 combining and applying gradients.
 
-The model and input code does not have to change because we have changed the
-underlying components of TensorFlow (such as
+The model and input code does not have to change because TensorFlow has changed its
+underlying components (such as
 optimizer, batch norm and summaries) to become distribution-aware.
 That means those components know how to
 combine their state across devices. Further, saving and checkpointing works
@@ -147,22 +147,22 @@ Consider a very simple model function which tries to learn a simple function.
 
 ```python
 def model_fn(features, labels, mode):
-  layer = tf.layers.Dense(1)
-  logits = layer(features)
-
-  if mode == tf.estimator.ModeKeys.PREDICT:
-    predictions = {"logits": logits}
-    return tf.estimator.EstimatorSpec(mode, predictions=predictions)
-
-  loss = tf.losses.mean_squared_error(
-      labels=labels, predictions=tf.reshape(logits, []))
-
-  if mode == tf.estimator.ModeKeys.EVAL:
+    layer = tf.layers.Dense(1)
+    logits = layer(features)
+    
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        predictions = {"logits": logits}
+        return tf.estimator.EstimatorSpec(mode, predictions=predictions)
+    
+    loss = tf.losses.mean_squared_error(
+        labels=labels, predictions=tf.reshape(logits, []))
+    
+    if mode == tf.estimator.ModeKeys.EVAL:
     return tf.estimator.EstimatorSpec(mode, loss=loss)
-
-  if mode == tf.estimator.ModeKeys.TRAIN:
-    train_op = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
-    return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
+    
+    if mode == tf.estimator.ModeKeys.TRAIN:
+        train_op = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
+        return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 ```
 
 Again, let's define a simple input function to feed data for training this model.
@@ -170,9 +170,9 @@ Again, let's define a simple input function to feed data for training this model
 
 ```python
 def input_fn():
-  features = tf.data.Dataset.from_tensors([[1.]]).repeat(100)
-  labels = tf.data.Dataset.from_tensors(1.).repeat(100)
-  return tf.data.Dataset.zip((features, labels))
+    features = tf.data.Dataset.from_tensors([[1.]]).repeat(100)
+    labels = tf.data.Dataset.from_tensors(1.).repeat(100)
+    return tf.data.Dataset.zip((features, labels))
 ```
 
 Now that we have a model function and input function defined, we can define the
@@ -215,6 +215,7 @@ in the input function gives a solid boost in performance. When using
 `dataset.prefetch`, use `buffer_size=None` to let it detect optimal buffer size.
 
 ## Multi-worker Training
+
 ### Overview
 
 For multi-worker training, no code change is required to the `Estimator` code.
@@ -266,7 +267,7 @@ gets a fraction of your input data.
 
 ### Performance Tips
 
-We have been actively working on multi-worker performance. Currently, prefer
+I have been actively working on multi-worker performance. Currently, prefer
 `CollectiveAllReduceStrategy` for synchronous multi-worker training.
 
 ### Example
@@ -277,13 +278,13 @@ start multi-worker training using `tf.estimator.train_and_evaluate`:
 
 ```python
 def model_main():
-  distribution = tf.contrib.distribute.CollectiveAllReduceStrategy(
-      num_gpus_per_worker=2)
-  config = tf.estimator.RunConfig(train_distribute=distribution)
-  estimator = tf.estimator.Estimator(model_fn=model_fn, config=config)
-  train_spec = tf.estimator.TrainSpec(input_fn=input_fn)
-  eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
-  tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
+    distribution = tf.contrib.distribute.CollectiveAllReduceStrategy(
+        num_gpus_per_worker=2)
+    config = tf.estimator.RunConfig(train_distribute=distribution)
+    estimator = tf.estimator.Estimator(model_fn=model_fn, config=config)
+    train_spec = tf.estimator.TrainSpec(input_fn=input_fn)
+    eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
+    tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 ```
 
 **Note**: You don't have to set "TF\_CONFIG" manually if you use our provided
