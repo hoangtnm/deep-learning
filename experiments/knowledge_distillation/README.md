@@ -1,4 +1,4 @@
-# Knowledge distillation
+# Distilling the Knowledge in a Neural Network
 
 **Motivation**: The main objective of any ML/AI model is determined by how well it can generalize on unseen data as opposed to how well it performs on the training data. If we look at this objective more closely, it is preferred to have different model adaptations for training and inference purposes. During training, we need deep and complex models so as to train upon a large amount of training data but during inference, we just need a lighter model that generalizes well on any unseen data. The lighter model obviously has a good performance during inference time in production. So the context setting for this article is to see if there is an effective way to distill this generalized knowledge to a lighter model to get the best of both worlds.
 
