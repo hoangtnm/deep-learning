@@ -76,3 +76,5 @@ Results show that a student trained in this fashion from a teacher (accuracy imp
 - Better accuracy than stand-alone model
 
 - Can be used even when there is lesser training data available for the student model. It is enough to have a well trained teacher.
+
+Reference: https://tinyurl.com/y7ts9pjc
