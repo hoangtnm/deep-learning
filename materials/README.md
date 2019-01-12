@@ -1,6 +1,4 @@
-# Learn_Deep_Learning_in_6_Weeks
-This is the Curriculum for "Learn Deep Learning in 6 Weeks" by Siraj Raval on Youtube 
-
+# Curriculum for Machine Learning & Deep Learning
 
 ## Overview
 
@@ -46,3 +44,62 @@ This is the curriculum for [this](https://youtu.be/_qjNH1rDLm0) video on Youtube
 ## Week 6 - Deep Reinforcement Learning
 - [ ] Watch CS 294 [here](http://rail.eecs.berkeley.edu/deeprlcourse/) 
 - [ ] Build a Deep Q Network using Tensorflow
+
+## Some interesting repos on GitHub
+
+```
+https://github.com/bangoc123/learn-machine-learning-in-two-months
+https://github.com/josephmisiti/awesome-machine-learning
+https://github.com/Avik-Jain/100-Days-Of-ML-Code
+https://github.com/keon/awesome-nlp
+https://github.com/vinta/awesome-python
+https://github.com/aymericdamien/TensorFlow-Examples
+https://github.com/ZuzooVn/machine-learning-for-software-engineers
+https://github.com/awesomedata/awesome-public-datasets
+https://github.com/endymecy/awesome-deeplearning-resources
+https://github.com/dennybritz/deeplearning-papernotes
+https://github.com/ujjwalkarn/Machine-Learning-Tutorials
+```
+
+## Stanford
+
+- Probability: CS109
+
+- Cryptocurrency: CS251
+
+- Mining Massive Data Sets: CS246
+
+- Convolutional Neural Networks for Visual Recognition: CS231N, CS131
+
+- Natural language processing: CS224N
+
+- Analysis of network: CS224W
+
+- Tensorflow for Deep Learning Research: CS20
+
+## Forum discussion
+
+- Reddit
+
+```
+https://www.reddit.com/r/MachineLearning/
+https://www.reddit.com/r/deeplearning/
+https://www.reddit.com/r/datascience/
+https://www.reddit.com/r/languagetechnology
+```
+
+- Quora
+
+```
+https://www.quora.com/topic/Deep-Learning
+https://www.quora.com/topic/Machine-Learning
+https://www.quora.com/topic/Natural-Language-Processing
+```
+
+- Medium
+
+```
+https://medium.com/topic/machine-learning
+https://medium.com/topic/artificial-intelligence
+https://medium.com/topic/data-science
+```
