@@ -47,7 +47,7 @@ def fixed_padding(inputs, kernel_size, data_format):
 
     Returns:
         A tensor with the same format as the input with the data either intact
-        (if kernel_size == 1) or padded (if kernel_size > 1).
+            (if kernel_size == 1) or padded (if kernel_size > 1).
     """
     pad_total = kernel_size - 1
     pad_beg = pad_total // 2
