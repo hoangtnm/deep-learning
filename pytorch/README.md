@@ -10,7 +10,7 @@ PyTorch is a Python package that provides two high-level features:
 
 - Deep neural networks built on a tape-based autograd system.
 
-## KEY FEATURES & CAPABILITIES**
+## KEY FEATURES & CAPABILITIES
 
 - Hybrid Front-End: A new hybrid front-end seamlessly transitions between eager mode and graph mode to provide both flexibility and speed.
 - Distributed Training: Scalable distributed training and performance optimization in research and production is enabled by the torch.distributed backend.
