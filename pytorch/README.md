@@ -2,11 +2,20 @@
 
 --------------------------------------------------------------------------------
 
-PyTorch is a Python package that provides two high-level features:
-- Tensor computation (like NumPy) with strong GPU acceleration
-- Deep neural networks built on a tape-based autograd system
+# Overview
 
-You can reuse your favorite Python packages such as NumPy, SciPy and Cython to extend PyTorch when needed.
+PyTorch is a Python package that provides two high-level features:
+
+- Tensor computation (like NumPy) with strong GPU acceleration.
+
+- Deep neural networks built on a tape-based autograd system.
+
+## KEY FEATURES & CAPABILITIES**
+
+- Hybrid Front-End: A new hybrid front-end seamlessly transitions between eager mode and graph mode to provide both flexibility and speed.
+- Distributed Training: Scalable distributed training and performance optimization in research and production is enabled by the torch.distributed backend.
+- Python-First: Deep integration into Python allows popular libraries and packages to be used for easily writing neural network layers in Python.
+- Tools & Libraries: A rich ecosystem of tools and libraries extends PyTorch and supports development in computer vision, NLP and more.
 
 - [More about PyTorch](#more-about-pytorch)
 - [Getting Started](#getting-started)
@@ -15,13 +24,13 @@ You can reuse your favorite Python packages such as NumPy, SciPy and Cython to e
 
 At a granular level, PyTorch is a library that consists of the following components:
 
-| Component | Description |
-| ---- | --- |
-| **torch** | a Tensor library like NumPy, with strong GPU support |
-| **torch.autograd** | a tape-based automatic differentiation library that supports all differentiable Tensor operations in torch |
-| **torch.nn** | a neural networks library deeply integrated with autograd designed for maximum flexibility |
+| Component                 | Description                                                                                                                             |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **torch**                 | a Tensor library like NumPy, with strong GPU support                                                                                    |
+| **torch.autograd**        | a tape-based automatic differentiation library that supports all differentiable Tensor operations in torch                              |
+| **torch.nn**              | a neural networks library deeply integrated with autograd designed for maximum flexibility                                              |
 | **torch.multiprocessing** | Python multiprocessing, but with magical memory sharing of torch Tensors across processes. Useful for data loading and Hogwild training |
-| **torch.utils** | DataLoader, Trainer and other utility functions for convenience |
+| **torch.utils**           | DataLoader, Trainer and other utility functions for convenience                                                                         |
 
 Usually one uses PyTorch either as:
 
