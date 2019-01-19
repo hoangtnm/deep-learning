@@ -112,7 +112,7 @@ The shape of a convolutional layer depends on the supplied values of `kernel_siz
 
 - `P` - the padding
 
-- `W`_in - the width/height (square) of the previous layer
+- `W_in` - the width/height (square) of the previous layer
 
 Notice that `K = out_channels`, `F = kernel_size`, and `S = stride`. Likewise, `W_in` is the first and second value of the input_shape tuple.
 
