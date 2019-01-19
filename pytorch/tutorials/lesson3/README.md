@@ -132,3 +132,138 @@ nn.MaxPool2d(4, 4)
 nn.Conv2d(10, 20, 5, padding=2)
 nn.MaxPool2d(2, 2)
 ```
+
+## Image Augmentation
+
+```python
+from torchvision import datasets
+import torchvision.transforms as transforms
+
+# Number of subprocesses to use for data loading
+num_workers = 0
+# How many samples per batch to load
+batch_size = 20
+# Percentage of training set to use as validation
+valid_size = 0.2
+
+# convert data to a normalized torch.FloatTensor
+transform = transforms.Compose([
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(10),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+
+# Prepare data loaders (combine dataset)
+train_loader = torch.utils.data.DataLoader(train_data,batch_size=batch_size, num_workers=num_workers)
+# Get some random training images
+dataiter = iter(trainloader)
+images, labels = dataiter.next()
+```
+
+It may prove useful to speed up your training time by using a GPU. CUDA is a parallel computing platform and CUDA Tensors are the same as typical Tensors, only they utilize GPU's for computation.
+
+```python
+import torch
+import torch.nn.functional as F
+
+# Check if CUDA is available
+train_on_gpu = torch.cuda.is_available()
+
+if train_on_gpu:
+    print('CUDA is available!  Training on GPU ...')
+else:
+    print('CUDA is not available.  Training on CPU ...')
+
+# Define the CNN architecture
+    class Net(nn.Module):
+        def __init__(self):
+            super(Net, self).__init__()
+            ...
+        def forward(self, x):
+            ...
+            return x
+
+model = Net()
+print(model)
+
+# Move tensors to GPU if CUDA is available
+if train_on_gpu:
+    model.cuda()
+```
+
+## Specify Loss Function and Optimizer
+
+```python
+import torch.optim as optim
+
+# Specify loss function (categorical cross-entropy)
+criterion = nn.CrossEntropyLoss()
+
+# Specify optimizer
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+```
+
+## Train the Model
+
+```python
+# Number of epochs to train the model
+n_epochs = 30
+
+valid_loss_min = np.Inf # track change in validation loss
+
+for epoch in range(1, n_epochs+1):
+
+    # Keep track of training and validation loss
+    train_loss = 0.0
+    valid_loss = 0.0
+
+    ###################
+    # Train the model #
+    ###################
+    model.train()
+    for batch_idx, (data, target) in enumerate(train_loader):
+        # Move tensors to GPU if CUDA is available
+        if train_on_gpu:
+            data, target = data.cuda(), target.cuda()
+        # Clear the gradients of all optimized variables
+        optimizer.zero_grad()
+        # Forward pass: compute predicted outputs by passing inputs to the model
+        output = model(data)
+        # Calculate the batch loss
+        loss = criterion(output, target)
+        # Backward pass: compute gradient of the loss with respect to model parameters
+        loss.backward()
+        # Perform a single optimization step (parameter update)
+        optimizer.step()
+        # Update training loss
+        train_loss += loss.item()*data.size(0)
+
+    ######################
+    # Validate the model #
+    ######################
+    model.eval()
+    for batch_idx, (data, target) in enumerate(valid_loader):
+        # Move tensors to GPU if CUDA is available
+        if train_on_gpu:
+            data, target = data.cuda(), target.cuda()
+        # Forward pass: compute predicted outputs by passing inputs to the model
+        output = model(data)
+        # Calculate the batch loss
+        loss = criterion(output, target)
+        # Update average validation loss 
+        valid_loss += loss.item()*data.size(0)
+
+    # Calculate average losses
+    train_loss = train_loss/len(train_loader.dataset)
+    valid_loss = valid_loss/len(valid_loader.dataset)
+
+    # Print training/validation statistics 
+    print(f'Epoch: {epoch} \tTraining Loss: {valid_loss:.6f} \tValidation Loss: {valid_loss:.6f}')
+
+    # Save model if validation loss has decreased
+    if valid_loss <= valid_loss_min:
+        print(f'Validation loss decreased ({valid_loss_min:.6f} --> {valid_loss:.6f}).  Saving model ...')
+        torch.save(model.state_dict(), 'model_augmented.pt')
+        valid_loss_min = valid_loss
+```
