@@ -413,7 +413,7 @@ model.save('my_model.h5')
 model = Xception(weights=None, ..)
 
 try:
-    parallel_model = multi_gpu_model(model, cpu_merge=False)
+    parallel_model = multi_gpu_model(model, gpus=2, cpu_merge=False)
     print("Training using multiple GPUs..")
 except:
     parallel_model = model
