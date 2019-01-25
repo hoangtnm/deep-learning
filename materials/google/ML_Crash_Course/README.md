@@ -27,7 +27,7 @@ An **unlabeled example** contains features but not the label. That is:
 
 `unlabeled examples: {features, ?}: (x, ?)`
 
-## Models
+### Models
 
 A model defines the relationship between features and label. For example, a spam detection model might associate certain features strongly with "spam". Let's highlight two phases of a model's life:
 
@@ -35,7 +35,7 @@ A model defines the relationship between features and label. For example, a spam
 
 - **Inference** means applying the trained model to unlabeled examples. That is, you use the trained model to make useful predictions (`y'`). For example, during inference, you can predict `medianHouseValue` for new unlabeled examples.
 
-## Regression vs. classification
+### Regression vs. classification
 
 A **regression** model predicts continuous values. For example, regression models make predictions that answer questions like the following:
 
