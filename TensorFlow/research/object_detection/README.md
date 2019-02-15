@@ -19,7 +19,9 @@ Setup:
 Quick Start:
 
   * <a href='object_detection_tutorial.ipynb'>
-      Quick Start: Jupyter notebook for off-the-shelf inference</a><br>
+      Quick Start: Jupyter notebook for off-the-shelf inference from image</a><br>
+  * <a href='object_detection_inference_tutorial.ipynb'>
+      Quick Start: Jupyter notebook for off-the-shelf inference from video</a><br>
   * <a href="g3doc/running_pets.md">Quick Start: Training a pet detector</a><br>
 
 Customizing a Pipeline:
