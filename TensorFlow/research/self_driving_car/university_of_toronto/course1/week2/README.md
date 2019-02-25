@@ -69,7 +69,7 @@ If you want to read more about sensors and computing hardware, check out **Secti
   - This is the norm, unless otherwise stated
 - Stopping distance: $d = \frac{v^2}{2a}$
 
-### Where to place sensors?
+### Where to place sensors
 
 - Need sensors to support maneuvers within our ODD
 - Broadly, we have two driving environments
@@ -218,7 +218,7 @@ The system supevisor monitors all parts of the software stack, as well as the ha
 
 ### Supplementary Reading: Software Architecture
 
-Learn more about AV software architecture from the [Team VictorTango - DARPA Urban Challenge Technical Paper](https://pdfs.semanticscholar.org/c10a/cd8c64790f7d040ea6f01d7b26b1d9a442db.pdf). 
+Learn more about AV software architecture from the [Team VictorTango - DARPA Urban Challenge Technical Paper](https://pdfs.semanticscholar.org/c10a/cd8c64790f7d040ea6f01d7b26b1d9a442db.pdf).
 
 The system supevisor is also responsible for informing the safety driver of any problems found in the system.
 
