@@ -19,7 +19,7 @@ from imutils.video import FPS
 from PIL import Image
 
 
-# # Model preparation
+# Model preparation
 MODEL_NAME = 'faster_rcnn_resnet50_coco_2018_01_28'
 
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
@@ -29,7 +29,7 @@ PATH_TO_FROZEN_GRAPH = os.path.join('models', MODEL_NAME, 'frozen_inference_grap
 PATH_TO_LABELS = os.path.join('data', 'mscoco_label_map.pbtxt')
 
 
-# ## Load a (frozen) Tensorflow model into memory.
+# Loading the (frozen) Tensorflow model into memory.
 detection_graph = tf.Graph()
 with detection_graph.as_default():
     od_graph_def = tf.GraphDef()
