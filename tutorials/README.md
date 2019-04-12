@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the curriculum for [this](https://youtu.be/_qjNH1rDLm0) video on Youtube by Siraj Raval
+This repo is to be a curriculm for everyone to pursue AI in general and Deep Learning in specific.
 
 ## Week 1 - Feedforward Neural Networks and Backpropagation
 
@@ -44,6 +44,26 @@ This is the curriculum for [this](https://youtu.be/_qjNH1rDLm0) video on Youtube
 ## Week 6 - Deep Reinforcement Learning
 - [ ] Watch CS 294 [here](http://rail.eecs.berkeley.edu/deeprlcourse/) 
 - [ ] Build a Deep Q Network using Tensorflow
+
+## Complete path to learning AI
+
+### New to AI and want to get started building AI apps fast?
+
+I highly recommend [AI Programming with Python Nanodegree program](https://mclick.udacity.com/z/iqpazvm1?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe). Even if you have no prior AI experience, you’ll be coding in Python and building your first neural network in just three months!
+
+### Have some Python and statistics experience and want to master the most important AI techniques?
+
+If you're hungry to work in the hottest field in AI, then definitely check out [Deep Learning Nanodegree program](https://mclick.udacity.com/z/mh56dg3n?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe). You'll master TensorFlow and learn Generative Adversarial Straight Networks (which let you auto-generate photorealistic faces) straight from their inventor!
+
+If you want the fastest path to an AI job, the [Machine Learning Engineer Nanodegree program](https://mclick.udacity.com/z/479w4xt1?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe) is for you. That's because jobs requiring Machine Learning are some of the fastest-growing roles according to LinkedIn, and we'll help you build your GitHub profile to ensure your skills are presented in the most compelling way to employers.
+
+### Already have some AI expertise and want to expand your toolkit with the most cutting-edge skills?
+
+Learn about one of today's most exciting areas in all of AI in [Deep Reinforcement Learning Nanodegree program](https://mclick.udacity.com/z/ifxx8hu3?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe). This is the technology Google's DeepMind team used to power its AlphaGo Zero engine. But it isn't just for games. Deep Reinforcement Learning has the ability to optimize many other fields—from robotics to finance.
+
+If you're eager to apply AI directly to some of the world's toughest challenges, consider either [Computer Vision](https://mclick.udacity.com/z/2mxeahm1?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe) or [Natural Language Processing](https://mclick.udacity.com/z/mjmz2h53?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe) programs. Including topics from building self-driving cars to creating smart assistants, these programs are taught with industry leaders like NVIDIA and Amazon Alexa, to help you put AI to immediate use in the real world.
+
+Round out your knowledge of AI by learning from AI experts like Sebastian Thrun and Peter Norvig in [Artificial Intelligence Nanodegree program](https://mclick.udacity.com/z/ct0ovega?uid=b6ac2a85-43dc-41bf-9664-dc8bdce2cf34&mid=3a105728-c021-469c-91f2-4b7d02cd30fe). You'll master the techniques used in the NASA Mars Rover and DeepMind's AlphaGo agent.
 
 ## Some interesting repos on GitHub
 
@@ -103,3 +123,7 @@ https://medium.com/topic/machine-learning
 https://medium.com/topic/artificial-intelligence
 https://medium.com/topic/data-science
 ```
+
+## References
+
+[Learn Deep Learning in 6 Weeks](https://youtu.be/_qjNH1rDLm0) by Siraj Raval
