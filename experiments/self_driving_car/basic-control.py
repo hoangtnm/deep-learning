@@ -45,7 +45,7 @@ def run(speed_add=1, theta_add=20):
         elif ((ascii_code == ord('a')) or (ascii_code == ord('A'))):
             theta -= theta_add
 
-        elif ((ascii_code == ord('\n')) or ascii_code == ord('\r'))):
+        elif ((ascii_code == ord('\n')) or (ascii_code == ord('\r'))):
             theta = 0
             speed = 0
                 
