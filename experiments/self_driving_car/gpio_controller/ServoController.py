@@ -1,7 +1,9 @@
-import sys, os
+import os
+import sys
+import time
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from gpio_controller.pca9685 import PCA_9685
-import time
+
 
 THROTTLE_MAX_REVERSE = 204  #1ms / 20ms * 4096
 THROTTLE_NEUTRAL = 307      #1.5ms / 20ms * 4096
@@ -22,6 +24,7 @@ THROTTLE_CHANNEL = 0
 
 PWM_FREQUENCY = 50      #50 frame / second --> 1 frame per 20 millisecond
 old_speed = 0
+
 
 class ServoController:
     """Controll stearing and speed using PWM PUSLE"""
@@ -60,7 +63,7 @@ class ServoController:
         real_theta = self.get_theta_in_boundary(theta)
 
         pulse = self.value_to_pulse(real_theta, MIN_ANGLE, MAX_ANGLE,
-                               STEERING_MAX_RIGHT, STEERING_MAX_LEFT)
+                                    STEERING_MAX_RIGHT, STEERING_MAX_LEFT)
 
         # print("Theta", theta, pulse)
 
@@ -70,7 +73,7 @@ class ServoController:
 
     def set_speed(self, speed):
         real_speed = self.get_speed_in_boundary(speed)
-        if real_speed < 0 & self.old_speed >= 0:
+        if (real_speed < 0) and (self.old_speed >= 0):
             time.sleep(0.1)
         
         self.old_speed = real_speed
@@ -85,4 +88,3 @@ class ServoController:
         #     self.init()
 
         return real_speed
-    
