@@ -27,7 +27,7 @@ def run(speed_add=1, theta_add=20):
     # speed_add = 10
     # theta_add = 20
 
-    stream = WebcamVideoStream(0).start()
+    stream = WebcamVideoStream(1).start()
     fps = FPS().start()
     
     while True:
