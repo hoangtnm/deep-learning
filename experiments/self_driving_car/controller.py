@@ -67,6 +67,47 @@ class PS4Controller:
             #pprint.pprint(self.hat_data)
 
 
+def get_button_command(button_data, controller):
+    """Get button number from a ps4 controller.
+    
+    Args:
+        butotn_data: an array of length
+            `controller.get_numbuttons()`
+        controller: pygame.joystick.Joystick()
+    Returns:
+        is_command: a boolean value
+        button_num: button number
+
+    Button number map:
+        0: SQUARE
+        1: X
+        2: CIRCLE
+        3: TRIANGLE
+        4: L1
+        5: R1
+        6: L2
+        7: R2
+        8: SHARE
+        9: OPTIONSservoMin
+        10: LEFT ANALOG PRESS
+        11: RIGHT ANALOG PRESS
+        12: PS4 ON BUTTON
+        13: TOUCHPAD PRESS
+    """
+
+    is_command = False
+    button_num = None
+    total_buttons = controller.get_numbuttons()
+
+    for num in range(total_buttons):
+        if button_data[num] == True:
+            is_command = True
+            button_num = num
+            break
+
+    return is_command, button_num
+
+
 if __name__ == "__main__":
     ps4 = PS4Controller()
     ps4.init()
