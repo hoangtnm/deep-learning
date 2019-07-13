@@ -5,7 +5,6 @@ import cv2
 import argparse
 import pygame
 import numpy as np
-from imutils.video import FPS
 from imutils.video import WebcamVideoStream
 from controller import PS4Controller
 from controller import get_button_command
@@ -24,11 +23,8 @@ def run(speed_add=1, theta_add=20):
     theta = 0
     oldSpeed = 0
     oldTheta = 0
-    # speed_add = 10
-    # theta_add = 20
 
     stream = WebcamVideoStream(1).start()
-    fps = FPS().start()
     
     while True:
         frame = stream.read()
@@ -96,12 +92,6 @@ def run(speed_add=1, theta_add=20):
             speed = servo_controller.set_speed(speed)
             theta = servo_controller.set_steer(theta)
         
-        fps.update()
-
-    # stop the timer and display FPS information
-    fps.stop()
-    print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-    print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
     stream.stop()
     cv2.destroyAllWindows()
 
@@ -112,17 +102,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--theta', default=20)
 
     args = vars(parser.parse_args())
-
     speed_add = args['speed']
     theta_add = args['theta']
 
     run(float(speed_add), float(theta_add))
-
-
-# theta = servo_controller.get_theta_in_boundary(theta)
-# speed = servo_controller.get_speed_in_boundary(speed)
-
-# print (speed, theta, command)
-    
-# servo_controller.set_speed(speed)
-# servo_controller.set_steer(theta)
