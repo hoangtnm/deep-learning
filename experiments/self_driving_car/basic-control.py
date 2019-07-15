@@ -28,10 +28,12 @@ def run(speed_add=1, theta_add=20):
     
     while True:
         frame = stream.read()
+        frame_height, frame_width, _ = frame.shape
+        resized_frame = cv2.resize(frame, (frame_width/2, frame_height/2))
 
         cv2.putText(frame, f'Speed: {speed}, Theta: {theta}',
                     (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
-        cv2.imshow('frame', frame)
+        cv2.imshow('frame', resized_frame)
 
         button_data, axis_data, _ = ps4_controller.listen()
         is_command, button_num = get_button_command(button_data, controller=ps4_controller.controller)
