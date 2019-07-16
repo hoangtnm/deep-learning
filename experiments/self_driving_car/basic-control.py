@@ -15,7 +15,7 @@ from gpio_controller.ServoController import ServoController
 def run(speed_add=1, theta_add=20, controller='ps4'):
     servo_controller = ServoController()
     servo_controller.init()
-    
+
     speed = 0
     theta = 0
     oldSpeed = 0
@@ -30,7 +30,7 @@ def run(speed_add=1, theta_add=20, controller='ps4'):
         ps4_controller.start()
     else:
         controller = 'keyboard'
-    
+
     while True:
         brake = False
         frame = stream.read()
@@ -42,8 +42,9 @@ def run(speed_add=1, theta_add=20, controller='ps4'):
         cv2.imshow('frame', resized_frame)
 
         button_data, axis_data, _ = ps4_controller.read()
-        is_command, button_num = get_button_command(button_data, controller=ps4_controller.controller)
-        ascii_code  = cv2.waitKey(1) & 0xFF
+        is_command, button_num = get_button_command(
+            button_data, controller=ps4_controller.controller)
+        ascii_code = cv2.waitKey(1) & 0xFF
 
         """PS4 Controller's axes map
 
@@ -72,7 +73,7 @@ def run(speed_add=1, theta_add=20, controller='ps4'):
             servo_controller.set_speed(0)
             servo_controller.set_steer(0)
             break
-        
+
         elif (is_command == True):
             if button_num == 0:
                 theta -= theta_add
@@ -84,14 +85,14 @@ def run(speed_add=1, theta_add=20, controller='ps4'):
             #     max_speed -= 5 * speed_add
             # elif button_num == 5:
             #     max_speed += 5 * speed_add
-            elif  button_num == 6:
+            elif button_num == 6:
                 speed -= speed_add
             elif button_num == 7:
                 speed += speed_add
-        
+
         elif ((ascii_code == ord('w')) or (ascii_code == ord('W'))):
             speed += speed_add
-                    
+
         elif ((ascii_code == ord('s')) or (ascii_code == ord('S'))):
             speed -= speed_add
 
@@ -104,19 +105,18 @@ def run(speed_add=1, theta_add=20, controller='ps4'):
         elif ((ascii_code == ord('\n')) or (ascii_code == ord('\r'))):
             brake = True
 
-                
         if ((oldSpeed != speed) or (oldTheta != theta)):
             oldSpeed = speed
             oldTheta = theta
 
             speed = servo_controller.set_speed(speed)
             theta = servo_controller.set_steer(theta)
-        
+
         if brake:
             print("Brake")
             speed = servo_controller.brake()
             oldSpeed = speed
-            
+
             time.sleep(0.5)
 
     stream.stop()
