@@ -1,0 +1,3 @@
+pygame
+ds4drv
+imutils
