@@ -73,8 +73,6 @@ class ServoController:
 
     def set_speed(self, speed):
         real_speed = self.get_speed_in_boundary(speed)
-        if (real_speed < 0) and (self.old_speed >= 0):
-            time.sleep(0.1)
         
         self.old_speed = real_speed
         pulse = self.value_to_pulse(real_speed, MIN_SPEED,MAX_SPEED,
@@ -88,3 +86,18 @@ class ServoController:
         #     self.init()
 
         return real_speed
+
+    def brake(self):
+        real_speed = self.old_speed * -3
+        if (real_speed > 0):
+            real_speed = 0
+            
+        if real_speed > MAX_SPEED:
+            real_speed = MAX_SPEED
+            
+        pulse = self.value_to_pulse(real_speed, MIN_SPEED,MAX_SPEED,
+                               THROTTLE_MAX_REVERSE, THROTTLE_MAX_FOWARD)
+
+        self.pwm.set_pwm(THROTTLE_CHANNEL, pulse)
+        return 0
+
