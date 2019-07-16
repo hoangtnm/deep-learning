@@ -29,7 +29,7 @@ def run(speed_add=1, theta_add=20, controller='ps4'):
         ps4_controller = PS4Controller()
         ps4_controller.start()
     else:
-        controller == 'keyboard'
+        controller = 'keyboard'
     
     while True:
         brake = False
