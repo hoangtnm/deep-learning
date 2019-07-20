@@ -22,7 +22,7 @@ MIN_ANGLE = -90
 STEERING_CHANNEL = 3
 THROTTLE_CHANNEL = 0
 
-PWM_FREQUENCY = 50      # 50 FPS --> 1 frame per 20ms
+PWM_FREQUENCY = 50          # 50 FPS --> 1 frame per 20ms
 old_speed = 0
 
 
@@ -63,9 +63,6 @@ class ServoController:
 
         pulse = self.value_to_pulse(real_theta, MIN_ANGLE, MAX_ANGLE,
                                     STEERING_MAX_RIGHT, STEERING_MAX_LEFT)
-
-        # print("Theta", theta, pulse)
-
         self.pwm.set_pwm(STEERING_CHANNEL, pulse)
 
         return real_theta
@@ -77,12 +74,7 @@ class ServoController:
         pulse = self.value_to_pulse(real_speed, MIN_SPEED, MAX_SPEED,
                                     THROTTLE_MAX_REVERSE, THROTTLE_MAX_FOWARD)
 
-        # print("Speed", real_speed, pulse)
         self.pwm.set_pwm(THROTTLE_CHANNEL, pulse)
-
-        # if (speed == 0):
-        #     self.pwm.init(PWM_FREQUENCY)
-        #     self.init()
 
         return real_speed
 
