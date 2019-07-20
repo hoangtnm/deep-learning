@@ -1,7 +1,7 @@
-import os
-import sys
-import time
+# import os
+# import sys
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import numpy as np
 from gpio_controller.pca9685 import PCA_9685
 
 
@@ -39,8 +39,9 @@ class ServoController:
         self.pwm.set_pwm(THROTTLE_CHANNEL, THROTTLE_NEUTRAL)
 
     def value_to_pulse(self, value, min_value, max_value, min_pulse, max_pulse):
-        return (value - min_value) * (max_pulse - min_pulse) \
-            / (max_value - min_value) + min_pulse
+        # return (value - min_value) * (max_pulse - min_pulse) \
+        #     / (max_value - min_value) + min_pulse
+        return np.interp(value, (min_value, max_value), (min_pulse, max_pulse))
 
     def get_speed_in_boundary(self, speed):
         if speed < MIN_SPEED:
