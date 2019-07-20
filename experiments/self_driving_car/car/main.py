@@ -2,12 +2,13 @@ import sys
 import torch
 import torchvision
 import numpy as np
-from board import SCL, SDA
 import busio
+from board import SCL, SDA
 from adafruit_pca9685 import PCA9685
 from adafruit_motor import servo
 from adafruit_motor import motor
 from controller import PS4Controller
+from controller import get_button_command
 import camera
 import cv2
 import csv
@@ -141,9 +142,9 @@ if __name__ == "__main__":
 
     car = Autocar()
     
-    # init controller
-    ps4 = PS4Controller()
-    ps4.init()
+    # Initialize controller
+    ps4_controller = PS4Controller()
+    ps4_controller.start()
     
     # Start in training mode
     train = True
@@ -154,8 +155,7 @@ if __name__ == "__main__":
         
     try:
         while True:
-        
-            button_data, axis_data, hat_data = ps4.listen()
+            button_data, axis_data, hat_data = ps4_controller.read()
             
             if button_data[1] == True and trig:
                 train = toggle(train)
