@@ -18,7 +18,6 @@ import neural_network
 
 
 class Autocar():
-
     def __init__(self):
         # init i2c
         i2c = busio.I2C(SCL, SDA)
@@ -60,14 +59,12 @@ class Autocar():
         return round((x+1)/12, 2)
 
     def drive(self, axis_data):
-
         self.servo_steer.angle = self.scale_servo(-axis_data[0])
         sum_inputs = round(-self.scale_esc(axis_data[4]) +
                            self.scale_esc(axis_data[3]), 2)
         self.esc.throttle = sum_inputs
 
     def save_data(self, axis_data):
-
         count = self.cam.count
         img = self.cam.value
 
@@ -89,7 +86,6 @@ class Autocar():
             pass
 
     def preprocess(self, camera_value):
-
         x = camera_value
         x = cv2.resize(x, (224, 224))
         x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
@@ -102,7 +98,6 @@ class Autocar():
         return x
 
     def autopilot(self):
-
         img = self.preprocess(self.cam.value)
         count = self.cam.count
 
@@ -133,7 +128,6 @@ class Autocar():
 
 
 if __name__ == "__main__":
-
     car = Autocar()
 
     # Initialize controller
