@@ -155,5 +155,5 @@ def get_button_command(button_data, controller):
 
 if __name__ == "__main__":
     ps4 = PS4Controller()
-    ps4.init()
-    ps4.listen()
+    ps4.start()
+    ps4.read()
