@@ -85,8 +85,8 @@ class Autocar:
 
         self.speed = np.interp(-raw_speed, (-1, 1),
                                (-self.max_speed, self.max_speed))
-        self.theta = np.interp(
-            raw_theta, (-1, 1), (-self.max_theta, self.max_theta))
+        self.theta = np.interp(raw_theta, (-1, 1),
+                               (-self.max_theta, self.max_theta))
 
         if ((self.oldSpeed != self.speed) or (self.oldTheta != self.theta)):
             self.oldSpeed = self.speed
