@@ -9,7 +9,7 @@ After that, you can capture frame-by-frame. But at the end, don’t forget to re
 
 cap = cv2.VideoCapture(0)
 
-while(cap.isOpened()):
+while True:
 	# Capture frame-by-frame
 	ret, frame = cap.read()
 	
