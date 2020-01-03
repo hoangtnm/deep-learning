@@ -8,3 +8,5 @@ This course provides a broad introduction to machine learning, datamining, and s
 ## Syllabus
 
 ### Exercise 1: Linear Regression
+
+### Exercise 2: Logistic Regression
