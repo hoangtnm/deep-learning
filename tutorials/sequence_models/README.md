@@ -17,3 +17,4 @@ You will:
 ### Week 1
 
 - Building a Recurrent Neural Network - Step by Step
+- Dinosaur Island -- Character-level language model
