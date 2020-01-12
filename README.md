@@ -1,61 +1,32 @@
-# Machine Learning & Deep Learning Research
+# Deep Learning Research
 
-The goal of this repository is to provide comprehensive tutorials and experiments for TensorFlow while maintaining the simplicity of the code.
+The goal of this repository is to provide comprehensive tutorials and experiments for TensorFlow and PyTorch while maintaining the simplicity of the code.
 
-<p align="center">
-  <img src="https://www.tensorflow.org/images/tf_logo_transp.png"><br><br>
-</p>
+<!-- <div align="center">
+  <img src="https://www.tensorflow.org/images/tf_logo_social.png">
+</div> -->
 
------------------
+[TensorFlow](https://www.tensorflow.org/) is an end-to-end open source platform for machine learning. It has a comprehensive, flexible ecosystem of [tools](https://www.tensorflow.org/resources/tools), [libraries](https://www.tensorflow.org/resources/libraries-extensions), and [community](https://www.tensorflow.org/community) resources that lets researchers push the state-of-the-art in ML and developers easily build and deploy ML-powered applications.
 
-**TensorFlow** is an open source software library for numerical computation
-using data flow graphs. The graph nodes represent mathematical operations, while
-the graph edges represent the multidimensional data arrays (tensors) that flow
-between them. This flexible architecture enables you to deploy computation to
-one or more CPUs or GPUs in a desktop, server, or mobile device without
-rewriting code. TensorFlow also includes
-[TensorBoard](https://github.com/tensorflow/tensorboard), a data visualization
-toolkit.
+<!-- <div align="center">
+  <img src="https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png">
+</div> -->
 
-TensorFlow was originally developed by researchers and engineers
-working on the Google Brain team within Google's Machine Intelligence Research
-organization for the purposes of conducting machine learning and deep neural
-networks research.  The system is general enough to be applicable in a wide
-variety of other domains, as well.
+[PyTorch](https://pytorch.org/) is an open source machine learning framework that accelerates the path from research prototyping to production deployment.
 
 ## Installation
 
-To install the current release for CPU-only:
-
-```
-pip install tensorflow
-```
-
-Use the GPU package for CUDA-enabled GPU cards:
-
-```
-pip install tensorflow-gpu
+```sh
+conda install tensorflow-gpu
+conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 ```
 
-*See [Installing TensorFlow](https://www.tensorflow.org/install) for detailed
-instructions, and how to build from source.*
+## Contents
 
-#### *Try your first TensorFlow program*
+### Tutorials
 
-```shell
-$ python
-```
-```python
->>> import tensorflow as tf
->>> tf.enable_eager_execution()
->>> tf.add(1, 2)
-3
->>> hello = tf.constant('Hello, TensorFlow!')
->>> hello.numpy()
-'Hello, TensorFlow!'
-```
-Learn more examples about how to do specific tasks in TensorFlow at the [tutorials page of tensorflow.org](https://www.tensorflow.org/tutorials/).
-
-## Contact Information
-
-If you have any questions or pull requests, please feel free to contact me. You can communicate with me by sending e-mail to minhhoangtrannhat@gmail.com.
+- Machine Learning Crash Course by Google
+- Machine Learning Course by Stanford University
+- Natural Language Processing in TensorFlow by deeplearning.ai
+- Sequence Models Course by deeplearning.ai
+- PyImageSearch code snippets
