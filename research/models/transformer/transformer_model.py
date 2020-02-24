@@ -1,11 +1,11 @@
 import math
 from copy import deepcopy
 
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import matplotlib.pyplot as plt
 from tokenizers import BertWordPieceTokenizer
 
 
@@ -50,7 +50,7 @@ class TransformerEncoderLayer(nn.Module):
             src: the sequnce to the encoder layer.
             src_mask: the mask for the src sequence.
         """
-        src2 = self.self_attn(src, src, src, src_mask)
+        src2 = self.self_attn(src, src, src, src_mask)[0]
         src = src + self.dropout1(src2)
         src = self.norm1(src)
 
@@ -85,6 +85,88 @@ class TransformerEncoder(nn.Module):
         output = src
         for layer in self.layers:
             output = layer(output, mask)
+
+        if self.norm:
+            output = self.norm(output)
+
+        return output
+
+
+class TransformerDecoderLayer(nn.Module):
+    """TransformerDecoderLayer is made up of self-attn, multi-head-attn and feedforward network.
+
+    Args:
+        d_model: the number of expected features in the input.
+        nhead: the number of heads in the multiheadattention models.
+        dim_feedforward: the dimension of the feedforward network model (default=2048).
+        dropout: the dropout value (default=0.1).
+    """
+
+    def __init__(self, d_model, nhead, dim_feedforward, dropout):
+        super(TransformerDecoderLayer, self).__init__()
+        self.self_attn = MultiHeadAttention(nhead, d_model, dropout)
+        self.src_attn = MultiHeadAttention(nhead, d_model, dropout)
+        self.linear1 = nn.Linear(d_model, dim_feedforward)
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_feedforward, d_model)
+
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.norm3 = nn.LayerNorm(d_model)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
+        self.dropout3 = nn.Dropout(dropout)
+
+    def forward(self, tgt, memory, tgt_mask, memory_mask):
+        """Pass the inputs (and mask) through the decoder layer.
+
+        Args:
+            tgt: the sequence to the decoder layer.
+            memory: the sequnce from the last layer of the encoder.
+            tgt_mask: the mask for the tgt sequence.
+            memory_mask: the mask for the memory sequence.
+        """
+        tgt2 = self.self_attn(tgt, tgt, tgt, tgt_mask)[0]
+        tgt = tgt + self.dropout1(tgt2)
+        tgt = self.norm1(tgt)
+
+        tgt2 = self.src_attn(tgt, memory, memory, memory_mask)[0]
+        tgt = tgt + self.dropout2(tgt2)
+        tgt = self.norm2(tgt)
+
+        tgt2 = self.linear2(self.dropout(F.relu(self.linear1(tgt))))
+        tgt = tgt + self.dropout3(tgt2)
+        tgt = self.norm3(tgt)
+        return tgt
+
+
+class TransformerDecoder(nn.Module):
+    """TransformerDecoder is a stack of N decoder layers.
+
+    Args:
+        decoder_layer: an instance of the TransformerDecoderLayer.
+        num_layers: the number of sub-decoder-layers in the decoder.
+        norm: the layer normalization component (optional).
+    """
+
+    def __init__(self, decoder_layer, num_layers, norm=None):
+        super(TransformerDecoder, self).__init__()
+        self.layers = get_clones(decoder_layer, num_layers)
+        self.num_layers = num_layers
+        self.norm = norm
+
+    def forward(self, tgt, memory, tgt_mask, memory_mask):
+        """Pass the inputs (and mask) through the decoder layer in turn.
+
+        Args:
+            tgt: the sequence to the decoder.
+            memory: the sequnce from the last layer of the encoder.
+            tgt_mask: the mask for the tgt sequence.
+            memory_mask: the mask for the memory sequence.
+        """
+        output = tgt
+        for layer in self.layers:
+            output = layer(output, memory, tgt_mask, memory_mask)
 
         if self.norm:
             output = self.norm(output)
