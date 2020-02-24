@@ -1,4 +1,6 @@
 import math
+from copy import deepcopy
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -16,14 +18,14 @@ class Transformer(nn.Module):
         dropout: the dropout value (default=0.1).
     """
 
-    def __init__(self, d_model=512, nhead=8, num_encoder_layer=6,
+    def __init__(self, d_model=512, nhead=8, num_encoder_layers=6,
                  num_decoder_layers=6, dim_feedforward=2048, dropout=0.1):
         super(Transformer, self).__init__()
         encoder_layer = TransformerEncoderLayer(
             d_model, nhead, dim_feedforward, dropout)
         encoder_norm = nn.LayerNorm(d_model)
         self.encoder = TransformerEncoder(
-            encoder_layer, num_encoder_layer, encoder_norm)
+            encoder_layer, num_encoder_layers, encoder_norm)
         decoder_layer = TransformerDecoderLayer(
             d_model, nhead, dim_feedforward, dropout)
         decoder_norm = nn.LayerNorm(d_model)
