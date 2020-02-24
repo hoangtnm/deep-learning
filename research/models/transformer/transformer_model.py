@@ -21,6 +21,77 @@ class Transformer(nn.Module):
         pass
 
 
+class TransformerEncoderLayer(nn.Module):
+    """TransformerEncoderLayer is made up of self-attn and feedforward network.
+
+    Args:
+        d_model: the number of expected features in the input.
+        nhead: the number of heads in the multiheadattention models.
+        dim_feedforward: the dimension of the feedforward network model (default=2048).
+        dropout: the dropout value (default=0.1).
+    """
+
+    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1):
+        super(TransformerEncoderLayer, self).__init__()
+        self.self_attn = MultiHeadAttention(nhead, d_model, dropout)
+        self.linear1 = nn.Linear(d_model, dim_feedforward)
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_feedforward, d_model)
+
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
+
+    def forward(self, src, src_mask=None):
+        """Pass the input through the encoder layer.
+
+        Args:
+            src: the sequnce to the encoder layer.
+            src_mask: the mask for the src sequence.
+        """
+        src2 = self.self_attn(src, src, src, src_mask)
+        src = src + self.dropout1(src2)
+        src = self.norm1(src)
+
+        src2 = self.linear2(self.dropout(F.relu(self.linear1(src))))
+        src = src + self.dropout2(src2)
+        src = self.norm2(src)
+        return src
+
+
+class TransformerEncoder(nn.Module):
+    """TransformerEncoder is a stack of N decoder layers.
+
+    Args:
+        encoder_layer: an instance of the TransformerEncoderLayer.
+        num_layers: the number of sub-encoder-layers in the encoder.
+        norm: the layer normalization component (optional).
+    """
+
+    def __init__(self, encoder_layer, num_layers, norm=None):
+        super(TransformerEncoder, self).__init__()
+        self.layers = get_clones(encoder_layer, num_layers)
+        self.num_layers = num_layers
+        self.norm = norm
+
+    def forward(self, src, mask):
+        """Pass the input through the encoder layers in turn.
+
+        Args:
+            src: the sequnce to the encoder.
+            mask: the mask for the src sequence.
+        """
+        output = src
+        for layer in self.layers:
+            output = layer(output, mask)
+
+        if self.norm:
+            output = self.norm(output)
+
+        return output
+
+
 def get_clones(module, N):
     return nn.ModuleList([deepcopy(module) for _ in range(N)])
 
