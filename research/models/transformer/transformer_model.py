@@ -1,24 +1,41 @@
 import math
-from copy import deepcopy
-
-import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from tokenizers import BertWordPieceTokenizer
 
 
 class Transformer(nn.Module):
+    """A transformer model.
+
+    Args:
+        d_model: the number of expected features in the encoder/decoder inputs (default=512).
+        nhead: the number of heads in the multiheadattention models (default=8).
+        num_encoder_layers: the number of sub-encoder-layers in the encoder (default=6).
+        num_decoder_layers: the number of sub-decoder-layers in the decoder (default=6).
+        dim_feedforward: the dimension of the feedforward network model (default=2048).
+        dropout: the dropout value (default=0.1).
+    """
 
     def __init__(self, d_model=512, nhead=8, num_encoder_layer=6,
                  num_decoder_layers=6, dim_feedforward=2048, dropout=0.1):
         super(Transformer, self).__init__()
+        encoder_layer = TransformerEncoderLayer(
+            d_model, nhead, dim_feedforward, dropout)
+        encoder_norm = nn.LayerNorm(d_model)
+        self.encoder = TransformerEncoder(
+            encoder_layer, num_encoder_layer, encoder_norm)
+        decoder_layer = TransformerDecoderLayer(
+            d_model, nhead, dim_feedforward, dropout)
+        decoder_norm = nn.LayerNorm(d_model)
+        self.decoder = TransformerDecoder(
+            decoder_layer, num_decoder_layers, decoder_norm)
         self.d_model = d_model
         self.nhead = nhead
 
     def forward(self, src, tgt, src_mask, tgt_mask):
-        pass
+        memory = self.encoder(src, src_mask)
+        output = self.decoder(tgt, memory, tgt_mask, src_mask)
+        return output
 
 
 class TransformerEncoderLayer(nn.Module):
@@ -26,7 +43,7 @@ class TransformerEncoderLayer(nn.Module):
 
     Args:
         d_model: the number of expected features in the input.
-        nhead: the number of heads in the multiheadattention models.
+        nhead: the number of heads in the multi-head-attention models.
         dim_feedforward: the dimension of the feedforward network model (default=2048).
         dropout: the dropout value (default=0.1).
     """
