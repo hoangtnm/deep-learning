@@ -9,7 +9,7 @@ class Transformer(nn.Module):
 
     Args:
         d_model: the number of expected features in the encoder/decoder inputs (default=512).
-        nhead: the number of heads in the multiheadattention models (default=8).
+        nhead: the number of heads in the multi-head-attention models (default=8).
         num_encoder_layers: the number of sub-encoder-layers in the encoder (default=6).
         num_decoder_layers: the number of sub-decoder-layers in the decoder (default=6).
         dim_feedforward: the dimension of the feedforward network model (default=2048).
@@ -114,7 +114,7 @@ class TransformerDecoderLayer(nn.Module):
 
     Args:
         d_model: the number of expected features in the input.
-        nhead: the number of heads in the multiheadattention models.
+        nhead: the number of heads in the multi-head-attention models.
         dim_feedforward: the dimension of the feedforward network model (default=2048).
         dropout: the dropout value (default=0.1).
     """
