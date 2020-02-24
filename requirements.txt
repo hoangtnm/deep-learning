@@ -6,3 +6,6 @@ sentencepiece
 sacremoses
 transformers
 tensorflow
+torchvision
+torchtext
+spacy
