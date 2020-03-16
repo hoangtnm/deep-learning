@@ -33,6 +33,34 @@ conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 
 ## Tips & Tricks
 
+### Tensor Core Performance
+
+#### Dimension Size
+
+- `GEMMs = "generalized (dense) matrix-matrix multiplies"`:\
+  For A x B where A has size (M, K) and B has size (K, N):
+  > N, M, K should be multiplies of 8.
+- `GEMMS in fully connected layers:`\
+  Batch size, input features, output features shoule be multiplies of 8.
+- `GEMMs in RNNs:`\
+  Batch size, hidden size, embedding size, dictionary size shoule be multiplies of 8.
+
+Libraries (cuDNN, cuBLAS) are optimized for Tensor Cores.
+
+#### cuDNN Algorithms
+
+If your data/layer sizes are constant each iteration, try
+
+```python
+import torch
+torch.backend.cudnn.benchmark = True
+...
+```
+
+This enables PyTorch's autotuner.
+
+The first iteration, it will test different cuDNN algorithms for each new convolutions size it sees, and cache the fastest choice to use in later iterations. [Details](https://discuss.pytorch.org/t/what-does-torch-backends-cudnn-benchmark-do/5936)
+
 ### Named Entity Recognition
 
 The CoNLL-2003 shared task data files contain four columns separated by a single space. Each word has been put on a separate line and there is an empty line after each sentence.
