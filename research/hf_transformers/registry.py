@@ -1,11 +1,14 @@
-from transformers import (BertConfig, BertForSequenceClassification, BertModel,
+from transformers import (BertConfig, BertForMaskedLM,
+                          BertForSequenceClassification, BertModel,
                           BertTokenizer, DistilBertConfig,
+                          DistilBertForMaskedLM,
                           DistilBertForSequenceClassification, DistilBertModel,
-                          DistilBertTokenizer, GPT2Config, GPT2Model,
-                          GPT2Tokenizer, OpenAIGPTConfig, OpenAIGPTModel,
+                          DistilBertTokenizer, GPT2Config, GPT2LMHeadModel,
+                          GPT2Model, GPT2Tokenizer, OpenAIGPTConfig,
+                          OpenAIGPTLMHeadModel, OpenAIGPTModel,
                           OpenAIGPTTokenizer, RobertaConfig,
-                          RobertaForSequenceClassification, RobertaModel,
-                          RobertaTokenizer, XLNetConfig,
+                          RobertaForMaskedLM, RobertaForSequenceClassification,
+                          RobertaModel, RobertaTokenizer, XLNetConfig,
                           XLNetForSequenceClassification, XLNetModel,
                           XLNetTokenizer)
 
@@ -16,6 +19,14 @@ model_class_dict = {
     'xlnet': XLNetModel,
     'distilbert': DistilBertModel,
     'roberta': RobertaModel
+}
+
+model_class_lm_dict = {
+    'bert': BertForMaskedLM,
+    'gpt': OpenAIGPTLMHeadModel,
+    'gpt2': GPT2LMHeadModel,
+    'distilbert': DistilBertForMaskedLM,
+    'roberta': RobertaForMaskedLM
 }
 
 model_class_glue_dict = {
