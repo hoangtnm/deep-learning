@@ -9,7 +9,7 @@ class HyperParams:
         self.per_gpu_train_batch_size = 8
         self.per_gpu_val_batch_size = 8
         self.gradient_accumulation_steps = 1
-        self.learning_rate = 5e-5
+        self.learning_rate = 1e-4
         self.weight_decay = 0.0
         self.adam_epsilon = 1e-8                # Epsilon for Adam optimizer
         self.max_grad_norm = 1.0                # Max gradient norm
