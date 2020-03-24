@@ -60,9 +60,8 @@ def create_configs(args):
     with open(os.path.join(args.input_dir, 'tokenizer_config.json'), 'w') as f:
         json.dump(tokenizer_config, f)
 
+
 # DEPREACATED
-
-
 class TextDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer,
                  args, file_path: str, block_size=512):
