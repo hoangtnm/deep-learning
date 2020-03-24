@@ -8,7 +8,7 @@
 export model_dir=models/roberta_vi
 
 python train_tokenizer.py \
-    --input_dir data/raw_text
+    --input_dir data/raw_text \
     --output_dir $model_dir \
     --vocab_size 52000
 ```
@@ -30,6 +30,7 @@ python language_modelling.py \
     --config_name $model_dir \
     --tokenizer_name $model_dir \
     --do_train \
+    --line_by_line \
     --do_eval \
     --num_train_epochs 10
 ```
