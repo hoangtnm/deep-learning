@@ -196,7 +196,8 @@ def train(args, train_dataset, model: PreTrainedModel,
         max(1, params.n_gpu)
     args.gradient_accumulation_steps = params.gradient_accumulation_steps
     args.max_grad_norm = params.max_grad_norm
-    args.num_train_epochs = params.num_train_epochs
+    if not args.num_train_epochs:
+        args.num_train_epochs = params.num_train_epochs
     args.learning_rate = params.learning_rate
     args.adam_epsilon = params.adam_epsilon
     args.warmup_steps = params.warmup_steps
@@ -463,11 +464,16 @@ def main():
         help="Overwrite the cached training and evaluation sets"
     )
 
+    parser.add_argument(
+        "--num_train_epochs", type=int,
+        help="Total number of training epochs to perform."
+    )
+
     args = parser.parse_args()
     args.device = torch.device(
         'cuda' if torch.cuda.is_initialized() else 'cpu')
 
-    create_configs(args)
+    # create_configs(args)
     config_class = model_config_dict[args.model_type]
     model_class = model_class_lm_dict[args.model_type]
     tokenizer_class = model_tokenizer_dict[args.model_type]
@@ -489,6 +495,12 @@ def main():
             "and load it from here, using --tokenizer_name".format(
                 tokenizer_class.__name__)
         )
+
+    if args.block_size <= 0:
+        # Our input block size will be the max possible for the model
+        args.block_size = tokenizer.max_len
+    else:
+        args.block_size = min(args.block_size, tokenizer.max_len)
 
     if args.model_name_or_path:
         model = model_class.from_pretrained(args.model_name_or_path,
