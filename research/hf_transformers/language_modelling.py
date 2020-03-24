@@ -31,7 +31,38 @@ logger = logging.getLogger(__name__)
 params = HyperParams()
 
 
+def create_configs(args):
+    config = {
+        "architectures": [
+            "RobertaForMaskedLM"
+        ],
+        "attention_probs_dropout_prob": 0.1,
+        "hidden_act": "gelu",
+        "hidden_dropout_prob": 0.1,
+        "hidden_size": 768,
+        "initializer_range": 0.02,
+        "intermediate_size": 3072,
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 514,
+        "model_type": "roberta",
+        "num_attention_heads": 12,
+        "num_hidden_layers": 6,
+        "type_vocab_size": 1,
+        "vocab_size": 52000
+    }
+
+    tokenizer_config = {
+        "max_len": 512
+    }
+
+    with open(os.path.join(args.input_dir, 'config.json'), 'w') as f:
+        json.dump(config, f)
+    with open(os.path.join(args.input_dir, 'tokenizer_config.json'), 'w') as f:
+        json.dump(tokenizer_config, f)
+
 # DEPREACATED
+
+
 class TextDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer,
                  args, file_path: str, block_size=512):
@@ -425,6 +456,7 @@ def main():
     args.device = torch.device(
         'cuda' if torch.cuda.is_initialized() else 'cpu')
 
+    create_configs(args)
     config_class = model_config_dict[args.model_type]
     model_class = model_class_lm_dict[args.model_type]
     tokenizer_class = model_tokenizer_dict[args.model_type]
