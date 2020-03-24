@@ -329,6 +329,8 @@ def train(args, train_dataset, model: PreTrainedModel,
 
         print(f'Loss: {epoch_loss:.4f} perplexity:{epoch_perplexity}')
 
+    writer.close()
+
     time_elapsed = time.time() - since
     print('Training completed in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60
