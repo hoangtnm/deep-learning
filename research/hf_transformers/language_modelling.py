@@ -262,6 +262,7 @@ def train(args, train_dataset, model: PreTrainedModel,
     )
 
     global_step = 0
+    best_perplexity = 0.0
     training_loss, running_loss = 0.0, 0.0
 
     # Take care of distributed/parallel training
@@ -316,14 +317,23 @@ def train(args, train_dataset, model: PreTrainedModel,
                 training_loss = 0.0
 
         epoch_loss = running_loss / len(train_dataset)
-        print(f'Loss: {epoch_loss:.4f}')
-
         # TODO: Evaluates and saves checkpoint after every epoch
+        result = evaluate(args, model, tokenizer)
+        epoch_perplexity = result.get('perplexity')
+
+        if step == 0:
+            best_perplexity = epoch_perplexity
+        else:
+            if epoch_perplexity < best_perplexity:
+                best_perplexity = epoch_perplexity
+
+        print(f'Loss: {epoch_loss:.4f} perplexity:{epoch_perplexity}')
 
     time_elapsed = time.time() - since
     print('Training completed in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60
     ))
+    print(f'Perplexity: {best_perplexity}')
 
     return model
 
