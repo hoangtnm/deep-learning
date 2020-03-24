@@ -1,5 +1,7 @@
 # Transformer-based Experiments for NLP
 
+**Note**: Only `RoBERTa` is supported. Other models will be supported in the future.
+
 ### 1.1 Training Tokenizer for a specific language
 
 ```sh
