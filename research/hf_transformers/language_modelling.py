@@ -113,8 +113,8 @@ class TextDataset(Dataset):
 
 
 class LineByLineTextDataset(Dataset):
-    def __init__(self, tokenizer: PreTrainedTokenizer, file_path: str,
-                 block_size=512):
+    def __init__(self, tokenizer: PreTrainedTokenizer, args,
+                 file_path: str, block_size=512):
         assert os.path.isfile(file_path)
         logger.info(f'Creating features from dataset file at {file_path}')
 
@@ -122,8 +122,26 @@ class LineByLineTextDataset(Dataset):
             lines = [line for line in f.read().splitlines()
                      if (len(line) > 0 and not line.isspace())]
 
-        self.examples = tokenizer.batch_encode_plus(
-            lines, add_special_tokens=True, max_length=block_size)['input_ids']
+        directory, filename = os.path.split(file_path)
+        cached_features_file = os.path.join(
+            directory, args.model_type + "_cached_lm_" + filename)
+
+        if os.path.exists(cached_features_file) and not args.overwrite_cache:
+            logger.info(
+                f'Loading features from cached file {cached_features_file}'
+            )
+            with open(cached_features_file, "rb") as handle:
+                self.examples = pickle.load(handle)
+        else:
+            self.examples = tokenizer.batch_encode_plus(
+                lines, add_special_tokens=True, max_length=block_size
+            )['input_ids']
+
+            logger.info(
+                f'Saving features into cached file {cached_features_file}'
+            )
+            with open(cached_features_file, "wb") as handle:
+                pickle.dump(self.examples, handle, pickle.HIGHEST_PROTOCOL)
 
     def __len__(self):
         return len(self.examples)
@@ -135,7 +153,7 @@ class LineByLineTextDataset(Dataset):
 def load_and_cache_examples(args, tokenizer, evaluate=False):
     file_path = args.eval_data_file if evaluate else args.train_data_file
     if args.line_by_line:
-        return LineByLineTextDataset(tokenizer, file_path, args.block_size)
+        return LineByLineTextDataset(tokenizer, args, file_path, args.block_size)
     else:
         return TextDataset(tokenizer, args, file_path, args.block_size)
 
@@ -191,6 +209,7 @@ def train(args, train_dataset, model: PreTrainedModel,
     best_model_wts = copy.deepcopy(model.state_dict())
 
     writer = SummaryWriter()
+    args.n_gpu = params.n_gpu
     args.per_gpu_train_batch_size = params.per_gpu_train_batch_size
     args.train_batch_size = args.per_gpu_train_batch_size * \
         max(1, params.n_gpu)
@@ -199,6 +218,7 @@ def train(args, train_dataset, model: PreTrainedModel,
     if not args.num_train_epochs:
         args.num_train_epochs = params.num_train_epochs
     args.learning_rate = params.learning_rate
+    args.weight_decay = params.weight_decay
     args.adam_epsilon = params.adam_epsilon
     args.warmup_steps = params.warmup_steps
     args.fp16 = params.fp16
@@ -271,7 +291,7 @@ def train(args, train_dataset, model: PreTrainedModel,
     model_to_resize.resize_token_embeddings(len(tokenizer))
     model.train()
 
-    for epoch in range(args.args.num_train_epochs):
+    for epoch in range(args.num_train_epochs):
         print(f'Epoch {epoch}/{args.num_train_epochs - 1}')
         print('-' * 10)
 
@@ -471,7 +491,7 @@ def main():
 
     args = parser.parse_args()
     args.device = torch.device(
-        'cuda' if torch.cuda.is_initialized() else 'cpu')
+        'cuda' if torch.cuda.is_available() else 'cpu')
 
     # create_configs(args)
     config_class = model_config_dict[args.model_type]
