@@ -24,6 +24,7 @@ export train_data_file=data/raw_text/vi_dedup.txt
 
 python language_modelling.py \
     --train_data_file $train_data_file \
+    # --overwrite_cache \
     --output_dir models/experiment \
     --model_type roberta \
     --mlm \
