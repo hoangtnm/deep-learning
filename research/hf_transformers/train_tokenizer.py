@@ -47,4 +47,6 @@ tokenizer.train(
 )
 
 # Saving tokenizer's vocab and config
+if not os.path.exists(args.output_dir):
+    os.makedirs(args.output_dir)
 tokenizer.save(args.output_dir)
