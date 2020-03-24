@@ -334,7 +334,8 @@ def train(args, train_dataset, model: PreTrainedModel,
                 # TODO: args.evaluate_during_training
                 writer.add_scalar('learning_rate',
                                   scheduler.get_lr()[0], global_step)
-                writer.add_scalar('loss/training', training_loss)
+                writer.add_scalar('loss/training',
+                                  training_loss, global_step)
                 training_loss = 0.0
 
         epoch_loss = running_loss / len(train_dataset)
