@@ -209,19 +209,6 @@ def train(args, train_dataset, model: PreTrainedModel,
     best_model_wts = copy.deepcopy(model.state_dict())
 
     writer = SummaryWriter()
-    args.n_gpu = params.n_gpu
-    args.per_gpu_train_batch_size = params.per_gpu_train_batch_size
-    args.train_batch_size = args.per_gpu_train_batch_size * \
-        max(1, params.n_gpu)
-    args.gradient_accumulation_steps = params.gradient_accumulation_steps
-    args.max_grad_norm = params.max_grad_norm
-    if not args.num_train_epochs:
-        args.num_train_epochs = params.num_train_epochs
-    args.learning_rate = params.learning_rate
-    args.weight_decay = params.weight_decay
-    args.adam_epsilon = params.adam_epsilon
-    args.warmup_steps = params.warmup_steps
-    args.fp16 = params.fp16
 
     def collate(examples: List[torch.Tensor]):
         if tokenizer._pad_token is None:
@@ -232,7 +219,7 @@ def train(args, train_dataset, model: PreTrainedModel,
     train_sampler = RandomSampler(train_dataset)
     train_dataloader = DataLoader(train_dataset, args.train_batch_size,
                                   sampler=train_sampler, collate_fn=collate,
-                                  num_workers=4)
+                                  num_workers=args.num_workers)
 
     t_total = len(train_dataloader) \
         // args.gradient_accumulation_steps \
@@ -366,8 +353,6 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer,
              prefix='') -> Dict:
 
     eval_dataset = load_and_cache_examples(args, tokenizer, evaluate=True)
-    args.eval_batch_size = params.per_gpu_val_batch_size * \
-        max(1, params.eval_batch_size)
 
     def collate(examples: List[torch.Tensor]):
         if tokenizer._pad_token is None:
@@ -378,7 +363,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer,
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(
         eval_dataset, args.eval_batch_size,
-        sampler=eval_sampler, collate_fn=collate, num_workers=4
+        sampler=eval_sampler, collate_fn=collate, num_workers=args.num_workers
     )
 
     # multi-gpu evaluate
@@ -493,6 +478,23 @@ def main():
     args = parser.parse_args()
     args.device = torch.device(
         'cuda' if torch.cuda.is_available() else 'cpu')
+    args.n_gpu = params.n_gpu
+    args.per_gpu_val_batch_size = params.per_gpu_val_batch_size
+    args.per_gpu_train_batch_size = params.per_gpu_train_batch_size
+    args.train_batch_size = args.per_gpu_train_batch_size * \
+        max(1, args.n_gpu)
+    args.eval_batch_size = params.per_gpu_val_batch_size * \
+        max(1, args.n_gpu)
+    args.gradient_accumulation_steps = params.gradient_accumulation_steps
+    args.max_grad_norm = params.max_grad_norm
+    if not args.num_train_epochs:
+        args.num_train_epochs = params.num_train_epochs
+    args.learning_rate = params.learning_rate
+    args.weight_decay = params.weight_decay
+    args.adam_epsilon = params.adam_epsilon
+    args.warmup_steps = params.warmup_steps
+    args.num_workers = params.num_workers
+    args.fp16 = params.fp16
 
     # create_configs(args)
     config_class = model_config_dict[args.model_type]

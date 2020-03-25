@@ -21,9 +21,11 @@ As the model is BERT-like, we’ll train it on a task of `Masked language modeli
 
 ```sh
 export train_data_file=data/raw_text/vi_dedup.txt
+export eval_data_file=data/raw_text/vie_newscrwal_2011_1M-sentences.txt
 
 python language_modelling.py \
     --train_data_file $train_data_file \
+    --eval_data_file $eval_data_file \
     # --overwrite_cache \
     --output_dir models/experiment \
     --model_type roberta \
