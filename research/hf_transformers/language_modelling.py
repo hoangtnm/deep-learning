@@ -11,13 +11,12 @@ import re
 import time
 from typing import Dict, List, Tuple
 
-import numpy as np
 import torch
 import torch.nn as nn
 from apex import amp
 from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import (DataLoader, Dataset, DistributedSampler,
-                              RandomSampler, SequentialSampler, TensorDataset)
+from torch.utils.data import (DataLoader, Dataset, RandomSampler,
+                              SequentialSampler, TensorDataset)
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm, trange
 from transformers import (WEIGHTS_NAME, AdamW, PreTrainedModel,
@@ -57,6 +56,7 @@ def create_configs(args):
 
     with open(os.path.join(args.input_dir, 'config.json'), 'w') as f:
         json.dump(config, f)
+
     with open(os.path.join(args.input_dir, 'tokenizer_config.json'), 'w') as f:
         json.dump(tokenizer_config, f)
 
@@ -185,7 +185,8 @@ def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args) -> T
     masked_indices = torch.bernoulli(probability_matrix).bool()
     labels[~masked_indices] = -100  # We only compute loss on masked tokens
 
-    # 80% of the time, we replace masked input tokens with tokenizer.mask_token ([MASK])
+    # 80% of the time, we replace masked input tokens
+    # with tokenizer.mask_token ([MASK])
     indices_replaced = torch.bernoulli(torch.full(
         labels.shape, 0.8)).bool() & masked_indices
     inputs[indices_replaced] = tokenizer.convert_tokens_to_ids(
@@ -198,7 +199,8 @@ def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args) -> T
         len(tokenizer), labels.shape, dtype=torch.long)
     inputs[indices_random] = random_words[indices_random]
 
-    # The rest of the time (10% of the time) we keep the masked input tokens unchanged
+    # The rest of the time (10% of the time)
+    # we keep the masked input tokens unchanged
     return inputs, labels
 
 
@@ -336,6 +338,7 @@ def train(args, train_dataset, model: PreTrainedModel,
             if epoch_perplexity < best_perplexity:
                 best_perplexity = epoch_perplexity
 
+        writer.add_scalar('perplexity per epoch', epoch_perplexity, epoch)
         print(f'Loss: {epoch_loss:.4f} perplexity:{epoch_perplexity}')
 
     writer.close()
@@ -421,10 +424,12 @@ def main():
     )
     parser.add_argument(
         "--line_by_line", action="store_true",
-        help="Whether distinct lines of text in the dataset are to be handled as distinct sequences.",
+        help="Whether distinct lines of text in the dataset are \
+            to be handled as distinct sequences.",
     )
     # parser.add_argument(
-    #     "--should_continue", action="store_true", help="Whether to continue from latest checkpoint in output_dir"
+    #     "--should_continue", action="store_true",
+    #     help="Whether to continue from latest checkpoint in output_dir"
     # )
     parser.add_argument(
         "--model_name_or_path", default=None, type=str,
@@ -443,11 +448,13 @@ def main():
 
     parser.add_argument(
         "--config_name", default=None, type=str,
-        help="Optional pretrained config name or path if not the same as model_name_or_path. If both are None, initialize a new config.",
+        help="Optional pretrained config name or path if not the same as \
+            model_name_or_path. If both are None, initialize a new config."
     )
     parser.add_argument(
         "--tokenizer_name", default=None, type=str,
-        help="Optional pretrained tokenizer name or path if not the same as model_name_or_path. If both are None, initialize a new tokenizer.",
+        help="Optional pretrained tokenizer name or path if not the same as \
+            model_name_or_path. If both are None, initialize a new tokenizer."
     )
 
     parser.add_argument(
