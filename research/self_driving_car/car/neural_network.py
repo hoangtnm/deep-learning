@@ -1,5 +1,12 @@
 import torch.nn as nn
+from torchvision import models
 import torch.nn.functional as F
+
+
+model_ft = models.resnet18(pretrained=True)
+num_ftrs = model_ft.fc.in_features
+model_ft.fc = nn.Linear(num_ftrs, 1)
+
 
 class Flatten(nn.Module):
     def forward(self, input):

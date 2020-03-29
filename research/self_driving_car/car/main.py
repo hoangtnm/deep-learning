@@ -6,13 +6,13 @@ import time
 import torch
 import torchvision
 import numpy as np
-import busio
-from board import SCL
-from board import SDA
+# import busio
+# from board import SCL
+# from board import SDA
 from uuid import uuid1
-from adafruit_motor import servo
-from adafruit_motor import motor
-from adafruit_pca9685 import PCA9685
+# from adafruit_motor import servo
+# from adafruit_motor import motor
+# from adafruit_pca9685 import PCA9685
 from controller import PS4Controller
 from controller import get_button_command
 from gpio_controller.ServoController import ServoController
@@ -23,11 +23,11 @@ import neural_network
 class Autocar:
     def __init__(self):
         # init i2c
-        i2c = busio.I2C(SCL, SDA)
+        # i2c = busio.I2C(SCL, SDA)
 
         # init PCA
-        self.pca = PCA9685(i2c)
-        self.pca.frequency = 50
+        # self.pca = PCA9685(i2c)
+        # self.pca.frequency = 50
 
         self.speed = 0
         self.theta = 0
@@ -45,7 +45,8 @@ class Autocar:
         model = neural_network.Net()
         self.model = model.eval()
         self.model.load_state_dict(torch.load('model/autopilot.pt'))
-        self.device = torch.device('cuda')
+        self.device = torch.device(
+            'cuda' if torch.cuda.is_available() else 'cpu')
         self.model.to(self.device)
 
         # init vars
