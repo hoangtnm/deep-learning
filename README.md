@@ -2,28 +2,15 @@
 
 The goal of this repository is to provide comprehensive tutorials and experiments for TensorFlow and PyTorch while maintaining the simplicity of the code.
 
-<!-- <div align="center">
-  <img src="https://www.tensorflow.org/images/tf_logo_social.png">
-</div> -->
+## Table of contents
 
-<!-- [TensorFlow](https://www.tensorflow.org/) is an end-to-end open source platform for machine learning. It has a comprehensive, flexible ecosystem of [tools](https://www.tensorflow.org/resources/tools), [libraries](https://www.tensorflow.org/resources/libraries-extensions), and [community](https://www.tensorflow.org/community) resources that lets researchers push the state-of-the-art in ML and developers easily build and deploy ML-powered applications. -->
+Setup:
 
-<!-- <div align="center">
-  <img src="https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png">
-</div> -->
+- <a href='docs/installation.md'>Installation</a><br>
 
-<!-- [PyTorch](https://pytorch.org/) is an open source machine learning framework that accelerates the path from research prototyping to production deployment. -->
+<!-- Research: -->
 
-<!-- ## Installation
-
-```sh
-conda install tensorflow-gpu
-conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
-``` -->
-
-## Contents
-
-## Tutorials
+Tutorials
 
 - Machine Learning Crash Course by Google
 - Machine Learning Course by Stanford University
@@ -31,18 +18,9 @@ conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 - Sequence Models Course by deeplearning.ai
 - PyImageSearch code snippets
 
-## Tips & Tricks
+Guidelines:
 
-### Named Entity Recognition
+- <a href='docs/performance.md'>Performance guidelines and practical recommendatons</a><br>
+- <a href='docs/ner.md'>Entity Recognition pre-processing</a><br>
 
-The CoNLL-2003 shared task data files contain four columns separated by a single space. Each word has been put on a separate line and there is an empty line after each sentence.
-
-In a pre-processing step only the two relevant columns (token and outer span NER annotation) are extracted:
-
-```sh
-export MAX_LENGTH=128
-export BERT_MODEL=bert-base-multilingual-cased
-
-cat train.txt | grep -v "^#" | cut -f 1,4 | tr '\t' ' ' > train.txt.tmp
-python utils/ner_preprocess.py train.txt.tmp $BERT_MODEL $MAX_LENGTH > train.txt
-```
+<!-- ## Tips & Tricks -->
