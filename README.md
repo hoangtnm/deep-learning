@@ -1,6 +1,6 @@
 # Deep Learning Research
 
-The goal of this repository is to provide comprehensive tutorials and experiments for TensorFlow and PyTorch while maintaining the simplicity of the code.
+The goal of this repository is to provide comprehensive tutorials and experiments for TensorFlow 2 and PyTorch while maintaining the simplicity of the code.
 
 ## Prerequisites
 
@@ -25,6 +25,7 @@ Tutorials
 - Natural Language Processing in TensorFlow by deeplearning.ai
 - Sequence Models Course by deeplearning.ai
 - PyImageSearch code snippets
+- <a href='tutorials/recap/README.md'>Deep Learning Recap</a><br>
 
 Guidelines:
 
