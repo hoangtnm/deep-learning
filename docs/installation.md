@@ -35,7 +35,7 @@ When running locally, the deep-learning directory should be appended to `PYTHONP
 
 ```sh
 # From deep-learning/
-export PYTHONPATH=$PYTHONPATH:`pwd`
+export PYTHONPATH=`pwd`${PYTHONPATH:+:${PYTHONPATH}}
 ```
 
 Note: This command needs to run from every new terminal you start. If you wish to avoid running this manually, you can add it as a new line to the end of your ~/.bashrc file, replacing `pwd` with the absolute path of deep-learning on your system.
