@@ -9,8 +9,9 @@ from tensorflow.keras.models import Model, Sequential, load_model
 
 class TFC3D(Model):
 
-    def __init__(self, num_classes):
+    def __init__(self, num_classes: int, dropout: float = 0.5):
         super().__init__()
+
         # 1st group
         self.conv1a = Conv3D(64, (3, 3, 3), (1, 1, 1),
                              padding='same', activation='relu',
@@ -43,13 +44,16 @@ class TFC3D(Model):
                              padding='same', activation='relu')
         self.pool5 = MaxPool3D((2, 2, 2), (2, 2, 2))
 
+        # fc group
         self.flatten = Flatten()
         self.fc6 = Dense(4096, activation='relu')
+        self.dropout6 = Dropout(dropout)
         self.fc7 = Dense(4096, activation='relu')
+        self.dropout7 = Dropout(dropout)
         self.fc8 = Dense(num_classes, activation='softmax')
 
     @tf.function
-    def call(self, x):
+    def call(self, x, training: bool):
         x = self.conv1a(x)
         x = self.pool1a(x)
 
@@ -68,7 +72,8 @@ class TFC3D(Model):
         x = self.conv5b(x)
         x = self.pool5(x)
 
-        x = self.flatten(self.fc6(x))
-        x = self.fc7(x)
+        x = self.flatten(x)
+        x = self.dropout6(self.fc6(x), training=training)
+        x = self.dropout7(self.fc7(x), training=training)
         x = self.fc8(x)
         return x
