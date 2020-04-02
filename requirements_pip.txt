@@ -1,0 +1,4 @@
+sentencepiece
+sacremoses
+transformers
+rasa

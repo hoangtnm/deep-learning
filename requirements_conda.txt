@@ -1,0 +1,11 @@
+tqdm
+boto3
+requests
+regex
+cudatoolkit=10.1
+scikit-learn
+pytorch
+torchvision
+torchtext
+captum
+tensorflow
