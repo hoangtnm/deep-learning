@@ -34,6 +34,7 @@ The TFRecord format is a simple format for storing a sequence of binary records.
 - [tf.data.Dataset](https://www.tensorflow.org/api_docs/python/tf/data/Dataset) API
 - [Tensorflow VarLenFeature vs FixedLenFeature](https://stackoverflow.com/questions/41921746/tensorflow-varlenfeature-vs-fixedlenfeature)
 - [Tensorflow Records? What they are and how to use them](https://medium.com/mostly-ai/tensorflow-records-what-they-are-and-how-to-use-them-c46bc4bbb564)
+- [Working with TFRecords and tf.train.Example](https://towardsdatascience.com/working-with-tfrecords-and-tf-train-example-36d111b3ff4d)
 
 ## Structuring TFRecord
 
