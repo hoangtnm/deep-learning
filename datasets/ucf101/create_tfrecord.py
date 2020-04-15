@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import functools
 import json
 import logging
 import multiprocessing
@@ -184,19 +185,20 @@ def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
 
 
 # def write_tfrecord(shard: List[Tuple[str, int]], filename: str):
-def write_tfrecord(info: Tuple[List[Tuple[str, int]], str, Tuple[int, int], int]):
+def write_tfrecord(work: Tuple[List[Tuple[str, int]], str],
+                   shape: Tuple[int, int], frames: int):
     """Writes a shard to a TFRecords file.
 
     Args:
-        info: A tuple of dataset shard, filename, shape and frames.
+        work: A tuple of dataset shard, filename, shape and frames.
             shard: List of examples.
                 Each example is a tuple of `path` and `label`.
             filename: Path to the TFRecords file.
-            shape: Shape of extracted frames without channel, e.g. (120, 120)
-            frames: Number of extracted frames.
+        shape: Shape of extracted frames without channel, e.g. (120, 120)
+        frames: Number of extracted frames.
     """
 
-    shard, filename, shape, frames = info
+    shard, filename = work
 
     with tf.io.TFRecordWriter(filename) as writer:
         for video_path, label in shard:
@@ -272,14 +274,11 @@ def process_dataset_v2(shards: List[List[Tuple[str, int]]],
         num_processes: Number of CPU cores to process in parallel.
     """
 
-    # Shape and num frames for each shard.
-    shape_list = [shape for _ in range(len(shards))]
-    frames_list = [frames for _ in range(len(shards))]
-
-    args = tuple(zip(shards, filenames, shape_list, frames_list))
+    work = tuple(zip(shards, filenames))
 
     with Pool(num_processes) as pool:
-        pool.map(write_tfrecord, args)
+        pool.map(functools.partial(write_tfrecord, shape=shape, frames=frames),
+                 work)
 
 
 def main():
@@ -340,6 +339,12 @@ def main():
         assert args.num_cpu % 2 == 0, 'Number of CPU shoule be divisible by 2'
 
     label_list = sorted(os.listdir(args.input_dir))
+
+    # Creates output_dir if needed
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+
+    # Writes JSON-based label_map file
     label_map_file = os.path.join(args.output_dir, 'label_map.txt')
     write_label_file(label_list, label_map_file)
 
