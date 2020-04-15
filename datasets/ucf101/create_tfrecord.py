@@ -293,7 +293,7 @@ def main():
         required=True)
     parser.add_argument(
         '--frame_shape',
-        default=(120, 120),
+        default=(112, 112),
         type=tuple,
         help='Shape of extracted frames from each video',
         required=False
