@@ -19,11 +19,13 @@ from research.utils import dataset_util
 logger = logging.getLogger(__name__)
 
 
-def video_to_tensor(path: str) -> tf.Tensor:
+def video_to_tensor(path: str, shape: Tuple[int, int], frames: int):
     """Creates a tensor of frames from a video.
 
     Args:
         path (str): Path to video.
+        shape: Shape of extracted frames without channel, e.g. (120, 120)
+        frames: Number of extracted frames.
 
     Returns:
         video_tensor (tf.Tensor): Tensor of frames.
@@ -41,12 +43,20 @@ def video_to_tensor(path: str) -> tf.Tensor:
 
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = cv2.resize(frame, shape,
+                               interpolation=cv2.INTER_LINEAR)
             frame_list.append(frame)
         else:
             break
 
     # Releases the capture
     cap.release()
+
+    # Video sampling
+    frame_list = np.asarray(frame_list)
+    frame_indices = np.linspace(
+        0, frame_list.shape[0] - 1, frames).astype(np.uint)
+    frame_list = frame_list[frame_indices, :, :, :]
 
     video_tensor = tf.convert_to_tensor(frame_list, dtype=tf.uint8)
     return video_tensor
@@ -174,21 +184,23 @@ def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
 
 
 # def write_tfrecord(shard: List[Tuple[str, int]], filename: str):
-def write_tfrecord(info: Tuple[List[Tuple[str, int]], str]):
+def write_tfrecord(info: Tuple[List[Tuple[str, int]], str, Tuple[int, int], int]):
     """Writes a shard to a TFRecords file.
 
     Args:
-        info: A tuple of dataset shard, and the corresponding filename.
+        info: A tuple of dataset shard, filename, shape and frames.
             shard: List of examples.
                 Each example is a tuple of `path` and `label`.
             filename: Path to the TFRecords file.
+            shape: Shape of extracted frames without channel, e.g. (120, 120)
+            frames: Number of extracted frames.
     """
 
-    dataset, filename = info
+    shard, filename, shape, frames = info
 
     with tf.io.TFRecordWriter(filename) as writer:
-        for video_path, label in dataset:
-            video_tensor = video_to_tensor(video_path)
+        for video_path, label in shard:
+            video_tensor = video_to_tensor(video_path, shape, frames)
             writer.write(serialize_example(video_tensor, label))
 
 
@@ -246,6 +258,8 @@ def get_filenames(output_dir: str, phase: str, num_shards: int) -> List[str]:
 
 def process_dataset_v2(shards: List[List[Tuple[str, int]]],
                        filenames: List[str],
+                       shape: Tuple[int, int],
+                       frames: int,
                        num_processes: int):
     """Writes dataset shards to TFRecords files.
 
@@ -253,10 +267,16 @@ def process_dataset_v2(shards: List[List[Tuple[str, int]]],
         shards: A list of shards, each of which is a list of examples.
             Each example is a tuple of video path and the corresponding label.
         filenames: A list of TFRecords filenames.
+        shape: Shape of extracted frames without channel, e.g. (120, 120)
+        frames: Number of extracted frames.
         num_processes: Number of CPU cores to process in parallel.
     """
 
-    args = tuple(zip(shards, filenames))
+    # Shape and num frames for each shard.
+    shape_list = [shape for _ in range(len(shards))]
+    frames_list = [frames for _ in range(len(shards))]
+
+    args = tuple(zip(shards, filenames, shape_list, frames_list))
 
     with Pool(num_processes) as pool:
         pool.map(write_tfrecord, args)
@@ -272,6 +292,20 @@ def main():
         '--output_dir',
         help='The output directory where the TFRecord files will be written',
         required=True)
+    parser.add_argument(
+        '--frame_shape',
+        default=(120, 120),
+        type=tuple,
+        help='Shape of extracted frames from each video',
+        required=False
+    )
+    parser.add_argument(
+        '--num_frames',
+        default=16,
+        type=int,
+        help='Number of extracted frames from each video',
+        required=False
+    )
     # parser.add_argument(
     #     '--label_map',
     #     default='label_map.txt',
@@ -350,7 +384,8 @@ def main():
         filenames = get_filenames(args.output_dir, phase, num_shards)
 
         # Writes TFRecords files.
-        process_dataset_v2(dataset_shards, filenames, args.num_cpu)
+        process_dataset_v2(dataset_shards, filenames,
+                           args.frame_shape, args.num_frames, args.num_cpu)
 
 
 if __name__ == "__main__":
