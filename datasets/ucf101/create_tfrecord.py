@@ -20,16 +20,16 @@ from research.utils import dataset_util
 logger = logging.getLogger(__name__)
 
 
-def video_to_tensor(path: str, shape: Tuple[int, int], frames: int):
-    """Creates a tensor of frames from a video.
+def extract_frames(path: str, shape: Tuple[int, int], seq_len: int) -> np.ndarray:
+    """Extract frames from a video.
 
     Args:
         path (str): Path to video.
         shape: Shape of extracted frames without channel, e.g. (120, 120)
-        frames: Number of extracted frames.
+        seq_len: Number of extracted frames.
 
     Returns:
-        video_tensor (tf.Tensor): Tensor of frames.
+        frame_list (np.ndarray): An array of extracted frames.
 
     Shape:
         - Output: (N_{out}, H_{out}, W_{out}, C_{out})
@@ -53,37 +53,42 @@ def video_to_tensor(path: str, shape: Tuple[int, int], frames: int):
     # Releases the capture
     cap.release()
 
-    # Video sampling
+    # Video temporal sampling: selects random `seq_len` sequential frames
     frame_list = np.asarray(frame_list)
-    frame_indices = np.linspace(
-        0, frame_list.shape[0] - 1, frames).astype(np.uint)
+    # frame_indices = np.linspace(
+    #     0, frame_list.shape[0] - 1, seq_len).astype(np.uint)
+    frame_indices = np.arange(frame_list.shape[0])
+    random.shuffle(frame_indices)
+    frame_indices = sorted(frame_indices[:seq_len])
     frame_list = frame_list[frame_indices, :, :, :]
-
-    video_tensor = tf.convert_to_tensor(frame_list, dtype=tf.uint8)
-    return video_tensor
+    return frame_list
 
 
-def serialize_example(video_tensor: tf.Tensor, label: int):
+def serialize_example(video: np.ndarray, label: int):
     """Creates a tf.Example message ready to be written to a file."""
 
-    # frames = video_tensor.shape[0]
-    # height = video_tensor.shape[1]
-    # width = video_tensor.shape[2]
-    channels = video_tensor.shape[3]
+    seq_len = video.shape[0]
+    height = video.shape[1]
+    width = video.shape[2]
+    channels = video.shape[3]
     assert channels == 3, 'Only RGB video format is supported'
 
     # Transforms a Tensor into a serialized TensorProto proto.
-    video_bytes = tf.io.serialize_tensor(video_tensor)
+    # TODO: Replaces to.string method from numpy with tf.io.serialize_tensor
+    # Note: tf.io.serialize_tensor causes issues when using Keras's model.fit
+    #   ValueError: Cannot take the length of shape with unknown rank.
+    # video_bytes = tf.io.serialize_tensor(video)
+    video_bytes = video.tostring()
 
     # Create a dictionary mapping the feature name to the tf.Example-compatible
     # data type
     feature = {
         'video': dataset_util.bytes_feature(video_bytes),
         'label': dataset_util.int64_feature(label),
-        # 'frames': dataset_util.int64_feature(frames),
-        # 'height': dataset_util.int64_feature(height),
-        # 'width': dataset_util.int64_feature(width),
-        # 'channels': dataset_util.int64_feature(channels)
+        'seq_len': dataset_util.int64_feature(seq_len),
+        'height': dataset_util.int64_feature(height),
+        'width': dataset_util.int64_feature(width),
+        'channels': dataset_util.int64_feature(channels)
     }
 
     # Creates a Features message using tf.train.Example
@@ -186,7 +191,7 @@ def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
 
 # def write_tfrecord(shard: List[Tuple[str, int]], filename: str):
 def write_tfrecord(work: Tuple[List[Tuple[str, int]], str],
-                   shape: Tuple[int, int], frames: int):
+                   shape: Tuple[int, int], seq_len: int):
     """Writes a shard to a TFRecords file.
 
     Args:
@@ -195,15 +200,15 @@ def write_tfrecord(work: Tuple[List[Tuple[str, int]], str],
                 Each example is a tuple of `path` and `label`.
             filename: Path to the TFRecords file.
         shape: Shape of extracted frames without channel, e.g. (120, 120)
-        frames: Number of extracted frames.
+        seq_len: Number of extracted frames.
     """
 
     shard, filename = work
 
     with tf.io.TFRecordWriter(filename) as writer:
         for video_path, label in shard:
-            video_tensor = video_to_tensor(video_path, shape, frames)
-            writer.write(serialize_example(video_tensor, label))
+            video = extract_frames(video_path, shape, seq_len)
+            writer.write(serialize_example(video, label))
 
 
 # def process_dataset(dataset: List[Tuple[str, int]], num_shards: int,
@@ -261,7 +266,7 @@ def get_filenames(output_dir: str, phase: str, num_shards: int) -> List[str]:
 def process_dataset_v2(shards: List[List[Tuple[str, int]]],
                        filenames: List[str],
                        shape: Tuple[int, int],
-                       frames: int,
+                       seq_len: int,
                        num_processes: int):
     """Writes dataset shards to TFRecords files.
 
@@ -270,14 +275,14 @@ def process_dataset_v2(shards: List[List[Tuple[str, int]]],
             Each example is a tuple of video path and the corresponding label.
         filenames: A list of TFRecords filenames.
         shape: Shape of extracted frames without channel, e.g. (120, 120)
-        frames: Number of extracted frames.
+        seq_len: Number of extracted frames.
         num_processes: Number of CPU cores to process in parallel.
     """
 
     work = tuple(zip(shards, filenames))
 
     with Pool(num_processes) as pool:
-        pool.map(functools.partial(write_tfrecord, shape=shape, frames=frames),
+        pool.map(functools.partial(write_tfrecord, shape=shape, seq_len=seq_len),
                  work)
 
 
@@ -299,7 +304,7 @@ def main():
         required=False
     )
     parser.add_argument(
-        '--num_frames',
+        '--seq_len',
         default=16,
         type=int,
         help='Number of extracted frames from each video',
@@ -390,7 +395,7 @@ def main():
 
         # Writes TFRecords files.
         process_dataset_v2(dataset_shards, filenames,
-                           args.frame_shape, args.num_frames, args.num_cpu)
+                           args.frame_shape, args.seq_len, args.num_cpu)
 
 
 if __name__ == "__main__":
