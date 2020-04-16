@@ -328,30 +328,30 @@ Here is a summary of the best practices for designing performant TensorFlow inpu
 Example code:
 
 ```python
+# Use `tf.parse_single_example()` to extract data from a `tf.Example`
+# protocol buffer, and perform any additional per-record preprocessing.
+# In some cases, `head -n20 /path/to/tfrecords` bash commmand is used to
+# find out the feature names of a TFRecord
+def parse_fn(serialized_example):
+    features = {
+        "image/encoded": tf.FixedLenFeature([], tf.string),
+        "image/class/label": tf.FixedLenFeature([], tf.int64)
+    }
+    parsed = tf.parse_single_example(record, features)
+
+    # Perform additional preprocessing on the parsed data.
+    image = tf.decode_raw(parsed["image/encoded"], tf.float32)
+    image = tf.reshape(image, [224, 224, 3])
+    label = tf.cast(parsed["image/class/label"], tf.int32)
+
+    return {"image": image}, label
+
 def get_dataset(data_dir, batch_size):
     dataset = tf.data.Dataset.list_files(data_dir)
     dataset = dataset.interleave(
         tf.data.TFRecordDataset,
         num_parallel_calls=tf.data.experimental.AUTOTUNE
     )
-
-    # Use `tf.parse_single_example()` to extract data from a `tf.Example`
-    # protocol buffer, and perform any additional per-record preprocessing.
-    # In some cases, `head -n20 /path/to/tfrecords` bash commmand is used to
-    # find out the feature names of a TFRecord
-    def parse_fn(serialized_example):
-        features = {
-            "image/encoded": tf.FixedLenFeature([], tf.string),
-            "image/class/label": tf.FixedLenFeature([], tf.int64)
-        }
-        parsed = tf.parse_single_example(record, features)
-
-        # Perform additional preprocessing on the parsed data.
-        image = tf.decode_raw(parsed["image/encoded"], tf.float32)
-        image = tf.reshape(image, [224, 224, 3])
-        label = tf.cast(parsed["image/class/label"], tf.int32)
-
-        return {"image": image}, label
 
     dataset = dataset.shuffle(buffer_size=10000)
 
