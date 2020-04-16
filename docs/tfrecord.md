@@ -15,9 +15,9 @@ The TFRecord format is a simple format for storing a sequence of binary records.
 - [tf.Example](#tfexample)
   - [Data types for tf.Example](#data-types-for-tfexample)
   - [Creating a tf.Example message](#creating-a-tfexample-message)
-- [TFRecords format details](#tfrecords-format-details)
-- [TFRecord files using tf.data](#tfrecord-files-using-tfdata)
   - [Writing a TFRecord file](#writing-a-tfrecord-file)
+- [TFRecord files in Python](#tfrecord-files-in-python)
+  - [Writing a TFRecord file](#writing-a-tfrecord-file-1)
   - [Reading a TFRecord file](#reading-a-tfrecord-file)
 - [Better performance with the tf.data API](#better-performance-with-the-tfdata-api)
   - [The naive approach](#the-naive-approach)
@@ -153,17 +153,46 @@ To decode the message use the `tf.train.Example.FromString` method.
 example_proto = tf.train.Example.FromString(serialized_example)
 ```
 
-## TFRecords format details
+<!-- ## TFRecords format details
 
-A TFRecord file contains a sequence of records. The file can only be read sequentially. _(Each record contains a byte-string, for the data-payload, plus the data-length, and CRC32C)_
+A TFRecord file contains a sequence of records. The file can only be read sequentially. _(Each record contains a byte-string, for the data-payload, plus the data-length, and CRC32C)_ -->
 
-<!-- ## TFRecord files using tf.data -->
-
-## TFRecord files using tf.data
+<!-- ## TFRecord files using tf.data
 
 The [tf.data](https://www.tensorflow.org/api_docs/python/tf/data) module also provides tools for reading and writing data in TensorFlow.
 
 ### Writing a TFRecord file
+
+The easiest way to get the data into a dataset is to use the `from_tensor_slices` method.
+
+```python
+writer = tf.io.TFRecordWriter('dataset.tfrecord')
+
+dataset = tf.data.Dataset.from_tensor_slices((feature0, feature1, feature2, feature3))
+
+for example in dataset:
+    feature0, feature1, feature2, feature3 = example
+    serialized_example = serialize_example(feature0, feature1, feature2, feature3)
+    writer.write(serialized_example)
+
+writer.close()
+``` -->
+
+## TFRecord files in Python
+
+The [tf.io](https://www.tensorflow.org/api_docs/python/tf/io) module also contains pure-Python functions for reading and writing TFRecord files.
+
+### Writing a TFRecord file
+
+Next, write the 10,000 observations to the file `test.tfrecord`. Each observation is converted to a `tf.Example` message, then written to file. You can then verify that the file `test.tfrecord` has been created:
+
+```python
+# Write the `tf.Example` observations to the file.
+with tf.io.TFRecordWriter(filename) as writer:
+  for i in range(n_observations):
+    example = serialize_example(feature0[i], feature1[i], feature2[i], feature3[i])
+    writer.write(example)
+```
 
 ### Reading a TFRecord file
 
@@ -172,18 +201,24 @@ def parse_fn(serialized_example):
     """Parse TFExample records and perform simple data augmentation."""
 
     features = {
-        'image': tf.FixedLengthFeature((), tf.string),
-        'label': tf.FixedLengthFeature((), tf.int64)
+        'feature0': tf.io.FixedLenFeature([], tf.int64),
+        'feature1': tf.io.FixedLenFeature([], tf.int64),
+        'feature2': tf.io.FixedLenFeature([], tf.string),
+        'feature3': tf.io.FixedLenFeature([], tf.float32),
     }
-    parsed = tf.parse_single_example(serialized_example, features)
-    image = tf.image.decode_image(parsed['image'])
-    return image, parsed['label']
+
+    # Parse the input tf.Example proto using the dictionary above.
+    parsed = tf.io.parse_single_example(serialized_example, features)
+    return parsed
 
 def get_dataset():
     files = tf.data.Dataset.list_files('/path/to/dataset/*.tfrecord')
-    dataset = files.interleave(tf.data.TFRecordDataset)
-    dataset = dataset.shuffle(buffer_size=FLAGS.shuffle_buffer_size)
-    dataset = dataset.map(parse_fn)
+    dataset = files.interleave(
+        tf.data.TFRecordDataset,
+        num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    dataset = dataset.shuffle(buffer_size)
+    dataset = dataset.map(
+        parse_fn, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     dataset = dataset.batch(batch_size)
     return dataset
 ```
@@ -234,7 +269,10 @@ The following diagram illustrates the effect of supplying `cycle_length=2` to th
 ![Parallel_interleave](images/datasets_parallel_io.png)
 
 ```python
-dataset = dataset.interleave(TFRecordDataset, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+dataset = dataset.interleave(
+    tf.data.TFRecordDataset,
+    num_parallel_calls=tf.data.experimental.AUTOTUNE
+)
 ```
 
 This time, the reading of the two datasets is parallelized, reducing the global data processing time.
@@ -291,20 +329,20 @@ Example code:
 
 ```python
 def get_dataset(data_dir, batch_size):
-    filenames = tf.data.Dataset.list_files(data_dir)
-
-    # dataset = filenames.apply(tf.contrib.data.parallel_interleave(
-    #     tf.data.TFRecordDataset, cycle_length=FLAGS.num_parallel_readers, sloppy=True))
+    dataset = tf.data.Dataset.list_files(data_dir)
+    dataset = dataset.interleave(
+        tf.data.TFRecordDataset,
+        num_parallel_calls=tf.data.experimental.AUTOTUNE
+    )
 
     # Use `tf.parse_single_example()` to extract data from a `tf.Example`
     # protocol buffer, and perform any additional per-record preprocessing.
     # In some cases, `head -n20 /path/to/tfrecords` bash commmand is used to
     # find out the feature names of a TFRecord
-    def parser(record):
+    def parse_fn(serialized_example):
         features = {
-            "image/encoded": tf.FixedLenFeature((), tf.string, default_value=""),
-            "image/class/label": tf.FixedLenFeature((), tf.int64,
-                                                    default_value=tf.zeros([], dtype=tf.int64)),
+            "image/encoded": tf.FixedLenFeature([], tf.string),
+            "image/class/label": tf.FixedLenFeature([], tf.int64)
         }
         parsed = tf.parse_single_example(record, features)
 
@@ -315,21 +353,26 @@ def get_dataset(data_dir, batch_size):
 
         return {"image": image}, label
 
-    # Use `Dataset.map()` to build a pair of a feature dictionary and a label
-    # tensor for each example.
     dataset = dataset.shuffle(buffer_size=10000)
 
     # Vectorize your mapped function
     dataset = dataset.batch(batch_size)
 
-    # Parallelize map transformation
-    dataset = dataset.map(parser, num_parasllel_calls=tf.data.experimental.AUTOTUNE)
+    # Use `Dataset.map()` to build a pair of a feature dictionary and a label
+    # tensor for each example.
+    dataset = dataset.map(
+        parse_fn,
+        num_parasllel_calls=tf.data.experimental.AUTOTUNE
+    )
 
     # Cache data
     dataset = dataset.cache()
 
     # Reduce memory usage
-    dataset = dataset.map(memory_consumming_map, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    dataset = dataset.map(
+        memory_consumming_map,
+        num_parallel_calls=tf.data.experimental.AUTOTUNE
+    )
 
     # Overlap producer and consumer works
     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
