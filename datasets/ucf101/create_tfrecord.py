@@ -20,7 +20,8 @@ from research.utils import dataset_util
 logger = logging.getLogger(__name__)
 
 
-def extract_frames(path: str, shape: Tuple[int, int], seq_len: int) -> np.ndarray:
+def extract_frames(path: str, shape: Tuple[int, int],
+                   seq_len: int) -> np.ndarray:
     """Extract frames from a video.
 
     Args:
@@ -163,7 +164,7 @@ def get_dataset(data_dir: str, label_list: List[str]) -> List[Tuple[str, int]]:
 
 
 def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
-        List[Tuple[str, int]]]:
+    List[Tuple[str, int]]]:
     """Splits dataset to shards.
 
     Args:
@@ -246,8 +247,9 @@ def get_filenames(output_dir: str, phase: str, num_shards: int) -> List[str]:
     """Returns a list of TFRecords filenames.
 
     Args:
+        output_dir: Path to the directory where TFRecords files will be written.
         phase: type of output file, e.g. `train` or `val`
-        num_shards: number of shards.
+        num_shards: Number of shards.
 
     Returns:
         filenames: A list of TFRecords filenames.
@@ -282,8 +284,9 @@ def process_dataset_v2(shards: List[List[Tuple[str, int]]],
     work = tuple(zip(shards, filenames))
 
     with Pool(num_processes) as pool:
-        pool.map(functools.partial(write_tfrecord, shape=shape, seq_len=seq_len),
-                 work)
+        pool.map(
+            functools.partial(write_tfrecord, shape=shape, seq_len=seq_len),
+            work)
 
 
 def main():
@@ -383,7 +386,6 @@ def main():
     dataset_dict = {'train': trainset, 'val': valset}
 
     for phase in ['train', 'val']:
-
         num_shards = args.num_train_shards if phase == 'train' \
             else args.num_val_shards
 
