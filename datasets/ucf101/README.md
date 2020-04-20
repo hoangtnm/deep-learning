@@ -33,7 +33,6 @@ The videos in 101 action categories are grouped into 25 groups, where each group
   biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1212-0402},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
-
 ```
 
 ## Creating TFRecords files
