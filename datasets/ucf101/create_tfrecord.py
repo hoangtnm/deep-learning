@@ -193,13 +193,13 @@ def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
 # def write_tfrecord(shard: List[Tuple[str, int]], filename: str):
 def write_tfrecord(work: Tuple[List[Tuple[str, int]], str],
                    shape: Tuple[int, int], seq_len: int):
-    """Writes a shard to a TFRecords file.
+    """Writes a shard to a TFRecord file.
 
     Args:
         work: A tuple of dataset shard, filename, shape and frames.
             shard: List of examples.
                 Each example is a tuple of `path` and `label`.
-            filename: Path to the TFRecords file.
+            filename: Path to the TFRecord file.
         shape: Shape of extracted frames without channel, e.g. (120, 120)
         seq_len: Number of extracted frames.
     """
@@ -244,15 +244,15 @@ def write_tfrecord(work: Tuple[List[Tuple[str, int]], str],
 
 
 def get_filenames(output_dir: str, phase: str, num_shards: int) -> List[str]:
-    """Returns a list of TFRecords filenames.
+    """Returns a list of TFRecord filenames.
 
     Args:
-        output_dir: Path to the directory where TFRecords files will be written.
+        output_dir: Path to the directory where TFRecord files will be written.
         phase: type of output file, e.g. `train` or `val`
         num_shards: Number of shards.
 
     Returns:
-        filenames: A list of TFRecords filenames.
+        filenames: A list of TFRecord filenames.
     """
 
     filenames = []
@@ -270,12 +270,12 @@ def process_dataset_v2(shards: List[List[Tuple[str, int]]],
                        shape: Tuple[int, int],
                        seq_len: int,
                        num_processes: int):
-    """Writes dataset shards to TFRecords files.
+    """Writes dataset shards to TFRecord files.
 
     Args:
         shards: A list of shards, each of which is a list of examples.
             Each example is a tuple of video path and the corresponding label.
-        filenames: A list of TFRecords filenames.
+        filenames: A list of TFRecord filenames.
         shape: Shape of extracted frames without channel, e.g. (120, 120)
         seq_len: Number of extracted frames.
         num_processes: Number of CPU cores to process in parallel.

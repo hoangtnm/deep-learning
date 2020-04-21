@@ -3,8 +3,8 @@
 ## Contents <!-- omit in toc -->
 
 - [Overview](#overview)
-- [Creating TFRecords files](#creating-tfrecords-files)
-- [Reading TFRecords files](#reading-tfrecords-files)
+- [Creating TFRecord files](#creating-tfrecord-files)
+- [Reading TFRecord files](#reading-tfrecord-files)
 
 ## Overview
 
@@ -35,7 +35,7 @@ The videos in 101 action categories are grouped into 25 groups, where each group
 }
 ```
 
-## Creating TFRecords files
+## Creating TFRecord files
 
 To use UCF-101 dataset in TensorFlow, it is required to convert it into [TFRecord file format](../../docs/tfrecord.md).
 
@@ -62,11 +62,11 @@ python creating_tfrecord.py \
     --num_cpu $NUM_CPU
 ```
 
-## Reading TFRecords files
+## Reading TFRecord files
 
-This section demonstrates how to read created TFRecords files and use them for training a Keras model.
+This section demonstrates how to read created TFRecord files and use them for training a Keras model.
 
-> You can read `read_tfrecord.py` file for more underlying techniques to process TFRecords files such as parsing, mapping, batching, etc.
+> You can read `read_tfrecord.py` file for more underlying techniques to process TFRecord files such as parsing, mapping, batching, etc.
 
 ```python
 from datasets.ucf101.read_tfrecord import get_dataset
