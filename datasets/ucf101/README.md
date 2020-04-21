@@ -47,7 +47,6 @@ The following command will create a label map with the dataset. This label map d
 ```sh
 DATASET_DIR={path to UCF-101 directory}
 OUTPUT_DIR={path to output directory}
-FRAME_SHAPE=(112, 112)
 SEQ_LEN=16
 NUM_TRAIN_SHARDS=64
 NUM_VAL_SHARDS=64
@@ -56,7 +55,7 @@ NUM_CPU=8
 python creating_tfrecord.py \
     --input_dir $DATASET_DIR \
     --output_dir $OUTPUT_DIR \
-    --frame_shape $FRAME_SHAPE \
+    --frame_shape 112 112 \
     --seq_len $SEQ_LEN \
     --num_train_shards $NUM_TRAIN_SHARDS \
     --num_val_shards $NUM_VAL_SHARDS \

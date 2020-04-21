@@ -164,7 +164,7 @@ def get_dataset(data_dir: str, label_list: List[str]) -> List[Tuple[str, int]]:
 
 
 def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
-    List[Tuple[str, int]]]:
+        List[Tuple[str, int]]]:
     """Splits dataset to shards.
 
     Args:
@@ -301,8 +301,9 @@ def main():
         required=True)
     parser.add_argument(
         '--frame_shape',
-        default=(112, 112),
-        type=tuple,
+        default=[112, 112],
+        nargs='+',
+        type=int,
         help='Shape of extracted frames from each video',
         required=False
     )
@@ -337,6 +338,7 @@ def main():
     )
 
     args = parser.parse_args()
+    args.frame_shape = tuple(args.frame_shape)
 
     assert os.path.exists(args.input_dir)
     assert args.num_train_shards >= args.num_cpu
