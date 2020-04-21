@@ -258,7 +258,7 @@ def get_filenames(output_dir: str, phase: str, num_shards: int) -> List[str]:
     filenames = []
 
     for idx in range(num_shards):
-        filename = f'{phase}-{idx:05d}-of-{num_shards:05d}'
+        filename = f'{phase}.tfrecord-{idx:05d}-of-{num_shards:05d}'
         filename = os.path.join(output_dir, filename)
         filenames.append(filename)
 

@@ -76,8 +76,8 @@ from datasets.ucf101.read_tfrecord import get_dataset
 EPOCHS = 1
 BATCH_SIZE = 8
 
-train_dataset = get_dataset('train*', BATCH_SIZE)
-val_dataset = get_dataset('val*', BATCH_SIZE)
+train_dataset = get_dataset('train.tfrecord*', BATCH_SIZE)
+val_dataset = get_dataset('val.tfrecord*', BATCH_SIZE)
 
 ...
 model.fit(train_dataset, validation_data=val_dataset, epochs=EPOCHS)
