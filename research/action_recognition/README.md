@@ -1,12 +1,17 @@
-# Action Recognition
+# Action Recognition <!-- omit in toc -->
 
-## Table of contents
+## Contents <!-- omit in toc -->
 
-Model architectures:
+- [Model Architectures](#model-architectures)
+  - [C3D](#c3d)
+- [Dataset Preparation](#dataset-preparation)
+  - [UCF101 Dataset](#ucf101-dataset)
+- [Training](#training)
+- [References](#references)
 
-- <a href='#c3d'>C3D</a><br>
+## Model Architectures
 
-## C3D
+### C3D
 
 C3D is a modified version of BVLC caffe to support 3D convolution and pooling. The main supporting features include:
 
@@ -14,6 +19,18 @@ C3D is a modified version of BVLC caffe to support 3D convolution and pooling. T
 - Extracting video features with pre-trained C3D models.
 
 For more information about C3D, please refer to the [C3D project website](http://vlg.cs.dartmouth.edu/c3d).
+
+## Dataset Preparation
+
+### UCF101 Dataset
+
+Please follow [UCF101 instructions](../../datasets/ucf101) for more information.
+
+## Training
+
+```python
+python train.py --input_dir <path>/<to>/<TFRecord folder>
+```
 
 ## References
 

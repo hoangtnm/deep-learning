@@ -272,7 +272,7 @@ def main():
         '--batch_size',
         default=8,
         type=int,
-        help='Path to UCF101 directory, which includes TFRecords files',
+        help='Number of samples per gradient update',
         required=True)
 
     args = parser.parse_args()
@@ -286,8 +286,7 @@ def main():
     # Hyperparameter tuning
     tuning_dir = os.path.join('logs', 'hparam_tuning',
                               datetime.now().strftime("%Y%m%d-%H%M"))
-    hparam_tuning(train_dataset, val_dataset, epochs=30,
-                  log_dir=tuning_dir)
+    hparam_tuning(train_dataset, val_dataset, epochs=30, log_dir=tuning_dir)
 
     # TF2 Custom training
     # train_eagerly(model, train_dataset, val_dataset,
