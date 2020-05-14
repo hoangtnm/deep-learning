@@ -15,7 +15,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop
 
 from datasets.ucf101.read_tfrecord import get_dataset
-from research.action_recognition.models import TFC3D
+from research.action_recognition.models.c3d import TFC3D
 import logging
 
 logging.basicConfig(level=logging.INFO)
