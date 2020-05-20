@@ -15,7 +15,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
-from research.utils import dataset_util
+from research.datasets.preprocessing import bytes_feature, int64_feature
 
 logger = logging.getLogger(__name__)
 
@@ -84,12 +84,12 @@ def serialize_example(video: np.ndarray, label: int):
     # Create a dictionary mapping the feature name to the tf.Example-compatible
     # data type
     feature = {
-        'video': dataset_util.bytes_feature(video_bytes),
-        'label': dataset_util.int64_feature(label),
-        'seq_len': dataset_util.int64_feature(seq_len),
-        'height': dataset_util.int64_feature(height),
-        'width': dataset_util.int64_feature(width),
-        'channels': dataset_util.int64_feature(channels)
+        'video': bytes_feature(video_bytes),
+        'label': int64_feature(label),
+        'seq_len': int64_feature(seq_len),
+        'height': int64_feature(height),
+        'width': int64_feature(width),
+        'channels': int64_feature(channels)
     }
 
     # Creates a Features message using tf.train.Example
@@ -105,12 +105,9 @@ def get_label_map_dict(label_list: List[str]) -> Dict[str, int]:
         label_list: List of label names.
 
     Returns:
-        label_map_dict: A dict mapping labels to the corresponding id.
+        A dict mapping labels to the corresponding id.
     """
-
-    label_map_dict = {label: label_id
-                      for label_id, label in enumerate(label_list)}
-    return label_map_dict
+    return {label: label_id for label_id, label in enumerate(label_list)}
 
 
 def write_label_file(label_list: List[str], filename: str) -> None:
@@ -164,7 +161,7 @@ def get_dataset(data_dir: str, label_list: List[str]) -> List[Tuple[str, int]]:
 
 
 def split_dataset(dataset: List[Tuple[str, int]], num_splits: int) -> List[
-        List[Tuple[str, int]]]:
+    List[Tuple[str, int]]]:
     """Splits dataset to shards.
 
     Args:

@@ -37,7 +37,7 @@ The videos in 101 action categories are grouped into 25 groups, where each group
 
 ## Creating TFRecord files
 
-To use UCF-101 dataset in TensorFlow, it is required to convert it into [TFRecord file format](../../docs/tfrecord.md).
+To use UCF-101 dataset in TensorFlow, it is required to convert it into [TFRecord file format](../../../docs/tfrecord.md).
 
 The following command will create a label map with the dataset. This label map defines a mapping from string class names to integer class id. Moreover, the dataset will be also shared into multiple files for performance purposes:
 
@@ -69,7 +69,7 @@ This section demonstrates how to read created TFRecord files and use them for tr
 > You can read `read_tfrecord.py` file for more underlying techniques to process TFRecord files such as parsing, mapping, batching, etc.
 
 ```python
-from datasets.ucf101.read_tfrecord import get_dataset
+from research.datasets.ucf101.read_tfrecord import get_dataset
 
 
 EPOCHS = 1

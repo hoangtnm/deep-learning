@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 from datetime import datetime
 from typing import Dict, Union
@@ -12,11 +13,10 @@ from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.metrics import Mean, SparseCategoricalAccuracy
 from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam, SGD, RMSprop
+from tensorflow.keras.optimizers import SGD, Adam, RMSprop
 
-from datasets.ucf101.read_tfrecord import get_dataset
-from research.action_recognition.models.c3d import TFC3D
-import logging
+from research.datasets.ucf101.read_tfrecord import get_dataset
+from research.action_recognition.models import TFC3D
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -24,7 +24,7 @@ For more information about C3D, please refer to the [C3D project website](http:/
 
 ### UCF101 Dataset
 
-Please follow [UCF101 instructions](../../datasets/ucf101) for more information.
+Please follow [UCF101 instructions](../datasets/ucf101) for more information.
 
 ## Training
 
