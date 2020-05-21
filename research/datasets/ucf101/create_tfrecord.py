@@ -319,11 +319,13 @@ def main():
     parser.add_argument(
         '--num_train_shards',
         default=64,
+        type=int,
         help='Number of shards for training',
         required=False)
     parser.add_argument(
         '--num_val_shards',
         default=64,
+        type=int,
         help='Number of shards for validation',
         required=False)
     parser.add_argument(

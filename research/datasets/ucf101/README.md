@@ -59,7 +59,7 @@ NUM_TRAIN_SHARDS=64
 NUM_VAL_SHARDS=64
 NUM_CPU=8
 
-python creating_tfrecord.py \
+python create_tfrecord.py \
     --input_dir $DATASET_DIR \
     --output_dir $OUTPUT_DIR \
     --frame_shape 112 112 \
