@@ -3,6 +3,7 @@
 ## Contents <!-- omit in toc -->
 
 - [Overview](#overview)
+- [Download the dataset](#download-the-dataset)
 - [Creating TFRecord files](#creating-tfrecord-files)
 - [Reading TFRecord files](#reading-tfrecord-files)
 
@@ -33,6 +34,12 @@ The videos in 101 action categories are grouped into 25 groups, where each group
   biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1212-0402},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+```
+
+## Download the dataset
+
+```bash
+bash download_dataset.sh
 ```
 
 ## Creating TFRecord files
