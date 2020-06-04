@@ -1,6 +1,6 @@
 # Deep Learning Research
 
-The goal of this repository is to provide comprehensive tutorials and experiments for TensorFlow 2 and PyTorch while maintaining the simplicity of the code.
+The goal of this repository is to provide comprehensive materials and research into Deep Learning powered by TensorFlow 2 and PyTorch while maintaining the simplicity of the code.
 
 ## Prerequisites
 
@@ -14,30 +14,33 @@ If you don’t know Python yet, http://learnpython.org/ is a great place to star
 
 Setup:
 
-- <a href='docs/installation.md'>Installation</a><br>
+- <a href="docs/installation.md">Installation</a><br>
 
-<!-- Research: -->
+Research:
 
-Tutorials:
+- <a href="research/action_recognition/README.md">Action Recognition</a><br>
+- <a href="research/transformers/README.md">Transformers</a><br>
+
+Materials:
 
 - Machine Learning Crash Course by Google
 - Machine Learning Course by Stanford University
 - Natural Language Processing in TensorFlow by deeplearning.ai
 - Sequence Models Course by deeplearning.ai
 - PyImageSearch code snippets
-- <a href='tutorials/recap/README.md'>Deep Learning Recap</a><br>
+- <a href="tutorials/recap/README.md">Deep Learning Recap</a><br>
 
 Guidelines:
 
-- <a href='docs/performance.md'>Performance guidelines and practical recommendatons</a><br>
-- <a href='docs/ner.md'>Entity Recognition pre-processing</a><br>
+- <a href="docs/performance.md">Performance guidelines and practical recommendatons</a><br>
+- <a href="docs/ner.md">Entity Recognition pre-processing</a><br>
 
-Framework introduction:
+<!-- Framework introduction:
 
-- <a href='#tensorflow'>TensorFlow</a><br>
-- <a href='#pytorch'>PyTorch</a><br>
+- <a href="#tensorflow">TensorFlow</a><br>
+- <a href="#pytorch">PyTorch</a><br> -->
 
-## Framework introduction
+<!-- ## Framework introduction
 
 ### TensorFlow
 
@@ -169,6 +172,4 @@ Three pointers to get you started:
 
 - [Tutorials: get you started with understanding and using PyTorch](https://pytorch.org/tutorials/)
 - [Examples: easy to understand pytorch code across all domains](https://github.com/pytorch/examples)
-- [The API Reference](https://pytorch.org/docs/)
-
-<!-- ## Tips & Tricks -->
+- [The API Reference](https://pytorch.org/docs/) -->
