@@ -249,17 +249,16 @@ def get_callbacks(log_dir, checkpoint_dir):
             where model checkpoints will be written.
 
     Returns:
-        callbacks: A list of callbacks.
+        A list of callbacks.
     """
 
-    callbacks = [
+    return [
         ModelCheckpoint(os.path.join(checkpoint_dir, 'checkpoint'),
                         monitor='val_loss', save_best_only=True,
                         save_weights_only=True),
         EarlyStopping(monitor='val_accuracy', patience=3),
         TensorBoard(log_dir)
     ]
-    return callbacks
 
 
 def main():

@@ -1,9 +1,15 @@
 import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras.layers import Conv3D, Dense, Dropout, Flatten, MaxPool3D
-from tensorflow.keras.models import Model
 
 
-class TFC3D(Model):
+class TFC3D(keras.Model):
+    """Convolutional 3D architecture.
+
+    Reference paper:
+    - [Learning Spatiotemporal Features with 3D Convolutional Networks]
+    (https://arxiv.org/abs/1412.0767)
+    """
 
     def __init__(self, classes: int, dropout=0.5, **kwargs):
         super().__init__(**kwargs)
