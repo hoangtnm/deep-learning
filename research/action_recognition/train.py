@@ -8,15 +8,15 @@ from typing import Dict, Union
 
 import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
+from tensorflow.keras import Model
 from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
                                         TensorBoard)
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.metrics import Mean, SparseCategoricalAccuracy
-from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import SGD, Adam, RMSprop
 
-from research.datasets.ucf101.read_tfrecord import get_dataset
 from research.action_recognition.models import TFC3D
+from research.datasets.ucf101.read_tfrecord import get_dataset
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ def train_keras(train_dataset: tf.data.Dataset, val_dataset: tf.data.Dataset,
         accuracy: The best accuracy on the validation_dataset.
     """
 
-    model = TFC3D(num_classes=101, dropout=dropout)
+    model = TFC3D(classes=101, dropout=dropout)
 
     if optimizer == 'sgd':
         optimizer = SGD(learning_rate)
