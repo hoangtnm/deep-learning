@@ -3,8 +3,8 @@ from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 from tensorflow.keras.layers import GRU, LSTM, Dense, Dropout, TimeDistributed
 
 
-def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), dropout=0.5,
-                  classes=1000, weights='imagenet'):
+def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), classes=1000,
+                  weights='imagenet', dropout=0.5):
     """Long-term Recurrent MobileNetV2 architecture.
 
     Reference papers:
@@ -16,14 +16,14 @@ def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), dropout=0.5,
     Args:
         seq_length: Number of frames in each sample.
         frame_shape: Shape of each frame in the sample.
-        dropout: Float between 0 and 1. Fraction of the units to drop.
-        classes: Number of classes to classify samples.
+        classes: Number of classes to classify.
         weights: One of `None` (random initialization),
             'imagenet' (pre-training on ImageNet),
             or the path to the weights file to be loaded.
+        dropout: Float between 0 and 1. Fraction of the units to drop.
 
     Returns:
-        model: A `keras.Model` instance.
+        A `keras.Model` instance.
     """
 
     model = keras.Sequential()
