@@ -7,7 +7,7 @@ def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), dropout=0.5,
                   classes=1000, weights='imagenet'):
     """Long-term Recurrent MobileNetV2 architecture.
 
-    Reference paper:
+    Reference papers:
     - [Long-term Recurrent Convolutional Networks for Visual Recognition and Description]
     (https://arxiv.org/abs/1411.4389)
     - [MobileNetV2: Inverted Residuals and Linear Bottlenecks]
