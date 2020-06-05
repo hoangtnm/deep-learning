@@ -10,11 +10,13 @@ def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), dropout=0.5,
     Reference paper:
     - [Long-term Recurrent Convolutional Networks for Visual Recognition and Description]
     (https://arxiv.org/abs/1411.4389)
+    - [MobileNetV2: Inverted Residuals and Linear Bottlenecks]
+    (https://arxiv.org/abs/1801.04381) (CVPR 2018)
 
     Args:
         seq_length: Number of frames in each sample.
         frame_shape: Shape of each frame in the sample.
-        dropout: Float between 0 and 1. Fraction of the units to drop. 
+        dropout: Float between 0 and 1. Fraction of the units to drop.
         classes: Number of classes to classify samples.
         weights: One of `None` (random initialization),
             'imagenet' (pre-training on ImageNet),
