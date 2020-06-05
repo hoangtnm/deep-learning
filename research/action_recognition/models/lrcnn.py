@@ -31,13 +31,13 @@ def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), dropout=0.5,
         MobileNetV2(frame_shape, include_top=False, pooling='avg'),
         input_shape=((seq_length,) + frame_shape)))
     model.add(LSTM(1024, return_sequences=True))
-    model.add(Dropout(dropout=dropout))
+    model.add(Dropout(dropout))
     model.add(GRU(512, return_sequences=True))
-    model.add(Dropout(dropout=dropout))
+    model.add(Dropout(dropout))
     model.add(GRU(256, return_sequences=True))
-    model.add(Dropout(dropout=dropout))
+    model.add(Dropout(dropout))
     model.add(GRU(128))
-    model.add(Dropout(dropout=dropout))
+    model.add(Dropout(dropout))
     model.add(Dense(classes, activation='softmax', name='predictions'))
 
     # Load weights
