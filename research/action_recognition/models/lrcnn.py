@@ -1,10 +1,9 @@
 from tensorflow import keras
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
-from tensorflow.keras.layers import (GRU, Dense, GlobalAveragePooling2D,
-                                     TimeDistributed)
+from tensorflow.keras.layers import GRU, LSTM, Dense, Dropout, TimeDistributed
 
 
-def LRMobileNetV2(seq_length, frame_shape, classes, weights):
+def LRMobileNetV2(seq_length, frame_shape, classes, weights, dropout=0.5):
     """Long-term Recurrent MobileNetV2 architecture.
 
     Reference paper:
@@ -24,14 +23,18 @@ def LRMobileNetV2(seq_length, frame_shape, classes, weights):
 
     model = keras.Sequential()
     model.add(TimeDistributed(
-        MobileNetV2(frame_shape, include_top=False, weights='imagenet'),
+        MobileNetV2(frame_shape, include_top=False,
+                    pooling='avg', weights='imagenet'),
         input_shape=((seq_length,) + frame_shape)))
-    model.add(TimeDistributed(GlobalAveragePooling2D()))
-    model.add(TimeDistributed(Dense(1024, activation='relu')))
+    model.add(LSTM(1024, return_sequences=True))
+    model.add(Dropout(dropout=dropout))
     model.add(GRU(512, return_sequences=True))
+    model.add(Dropout(dropout=dropout))
     model.add(GRU(256, return_sequences=True))
+    model.add(Dropout(dropout=dropout))
     model.add(GRU(128))
-    model.add(Dense(classes))
+    model.add(Dropout(dropout=dropout))
+    model.add(Dense(classes, activation='softmax', name='predictions'))
 
     # Load weights
     if weights is not None:
