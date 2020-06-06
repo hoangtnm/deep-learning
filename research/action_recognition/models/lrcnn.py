@@ -1,5 +1,5 @@
 from tensorflow import keras
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import GRU, LSTM, Dense, Dropout, TimeDistributed
 
 
@@ -40,7 +40,7 @@ def LRMobileNetV2(seq_length=16, frame_shape=(224, 224, 3), classes=1000,
     model.add(Dropout(dropout))
     model.add(Dense(classes, activation='softmax', name='predictions'))
 
-    # Load weights
+    # Load weights.
     if weights != 'imagenet':
         model.load_weights(weights)
 
