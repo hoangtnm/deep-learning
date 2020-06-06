@@ -9,17 +9,19 @@ from typing import Dict, Union
 import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
 from tensorflow.keras import Model
-from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
-                                        TensorBoard)
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.metrics import Mean, SparseCategoricalAccuracy
 from tensorflow.keras.optimizers import SGD, Adam, RMSprop
 
 from research.action_recognition.models import TFC3D
-from research.datasets.ucf101.read_tfrecord import get_dataset
+from research.datasets import ucf101
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+MODEL_LIST = ['c3d', 'lrmobilenet_v2']
 
 
 def train_eagerly(model: Model, train_dataset, val_dataset,
@@ -239,58 +241,41 @@ def hparam_tuning(train_dataset: tf.data.Dataset, val_dataset: tf.data.Dataset,
                 trial_step += 1
 
 
-def get_callbacks(log_dir, checkpoint_dir):
-    """Returns a list of callbacks.
-
-    Args:
-        log_dir: Path to the directory
-            where TensorBoard logs will be written.
-        checkpoint_dir: Path to the directory
-            where model checkpoints will be written.
-
-    Returns:
-        A list of callbacks.
-    """
-
-    return [
-        ModelCheckpoint(os.path.join(checkpoint_dir, 'checkpoint'),
-                        monitor='val_loss', save_best_only=True,
-                        save_weights_only=True),
-        EarlyStopping(monitor='val_accuracy', patience=3),
-        TensorBoard(log_dir)
-    ]
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--input_dir',
-        help='Path to UCF101 directory, which includes TFRecords files',
-        required=True)
+        '--model_type', required=True,
+        help=f'Model type selected in the list: {MODEL_LIST}')
     parser.add_argument(
-        '--batch_size',
-        default=8,
-        type=int,
-        help='Number of samples per gradient update',
-        required=True)
+        '--input_dir', required=True,
+        help='Path to dataset directory including TFRecords files')
+    parser.add_argument(
+        '--batch_size', default=8, type=int, required=False,
+        help='Number of samples per gradient update')
 
     args = parser.parse_args()
 
-    # Dataset preparation.
-    train_dataset = get_dataset(os.path.join(args.input_dir, 'train*'),
-                                args.batch_size)
-    val_dataset = get_dataset(os.path.join(args.input_dir, 'val*'),
-                              args.batch_size)
+    # Validate arguments.
+    assert args.model_type in MODEL_LIST, f'model_type is not in {MODEL_LIST}'
 
-    # Hyperparameter tuning
+    # Preprocess and load dataset.
+    processors = [preprocess_input] if args.model_type.endswith(
+        'mobilenet_v2') else None
+
+    train_dataset = ucf101.load_data(os.path.join(args.input_dir, 'train*'),
+                                     args.batch_size, processors)
+    val_dataset = ucf101.load_data(os.path.join(args.input_dir, 'val*'),
+                                   args.batch_size, processors)
+
+    # Hyperparameter tuning.
     tuning_dir = os.path.join('logs', 'hparam_tuning',
                               datetime.now().strftime("%Y%m%d-%H%M"))
     hparam_tuning(train_dataset, val_dataset, epochs=30, log_dir=tuning_dir)
 
-    # TF2 Custom training
+    # TF2 Custom training.
     # train_eagerly(model, train_dataset, val_dataset,
     #               optimizer, epochs=30, log_dir='logs')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

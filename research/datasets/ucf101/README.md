@@ -76,14 +76,14 @@ This section demonstrates how to read created TFRecord files and use them for tr
 > You can read `read_tfrecord.py` file for more underlying techniques to process TFRecord files such as parsing, mapping, batching, etc.
 
 ```python
-from research.datasets.ucf101.read_tfrecord import get_dataset
+from research.datasets import ucf101
 
 
 EPOCHS = 1
 BATCH_SIZE = 8
 
-train_dataset = get_dataset('train.tfrecord*', BATCH_SIZE)
-val_dataset = get_dataset('val.tfrecord*', BATCH_SIZE)
+train_dataset = ucf101.load_data('train.tfrecord*', BATCH_SIZE)
+val_dataset = ucf101.load_data('val.tfrecord*', BATCH_SIZE)
 
 ...
 model.fit(train_dataset, validation_data=val_dataset, epochs=EPOCHS)
