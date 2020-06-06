@@ -5,7 +5,7 @@ from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
 
 
 def get_default_callbacks(log_dir, checkpoint_dir, **kwargs):
-    """Returns a list of common callbacks.
+    """Returns a list of common TensorFlow callbacks.
 
     Args:
         log_dir: Path to the directory
