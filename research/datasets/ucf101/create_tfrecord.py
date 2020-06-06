@@ -15,7 +15,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
-from research.datasets.utils import bytes_feature, int64_feature
+from research.utils import bytes_feature, int64_feature
 
 logger = logging.getLogger(__name__)
 
