@@ -32,6 +32,7 @@ Materials:
 
 Guidelines:
 
+- <a href="docs/hparam_tuning.md">Hyperparameter Tuning with the HParams Dashboard</a><br>
 - <a href="docs/performance.md">Performance guidelines and practical recommendatons</a><br>
 - <a href="docs/ner.md">Entity Recognition pre-processing</a><br>
 
