@@ -102,7 +102,7 @@ def train_test_model(hparams):
 
 ### Notes <!-- omit in toc -->
 
-As you can see the configurations for `hp.Metric` when using callbacks are slightly different from the first one in terms of `tag` and `group`. The reseason is that [TensorBoard callback](https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard) writes specific summary tags for metrics such as `epoch_accuracy` and `epoch_lossnot` w.r.t custom tag like `accuracy`, which is inconsistent with `hp.hparams_config(..., metrics=METRICS)` and causes TensorBoard's HParams plugin cannot find the summary tag with the name `accuracy` in log files.
+As you can see the configurations for `hp.Metric` when using callbacks are slightly different from the first one in terms of `tag` and `group`. The reason is that [TensorBoard callback](https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard) writes specific summary tags for metrics such as `epoch_accuracy` and `epoch_loss` w.r.t custom tag like `accuracy`, which is inconsistent with `hp.hparams_config(..., metrics=METRICS)` and causes TensorBoard's HParams plugin cannot find the summary tag with the name `accuracy` in log files.
 Therefore, the value for hp.Metric's tag must be `epoch_accuracy`, which is compatible with TensorBoard callback.
 
 - tag: The tag name of the scalar summary that corresponds to this metric.
