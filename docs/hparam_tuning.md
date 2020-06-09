@@ -22,6 +22,7 @@ Experiment with three hyperparameters in the model:
 List the values to try, and log an experiment configuration to TensorBoard. This step is optional: you can provide domain information to enable more precise filtering of hyperparameters in the UI, and you can specify which metrics should be displayed.
 
 ```python
+import tensorflow as tf
 from tensorboard.plugins.hparams import api as hp
 
 
@@ -60,7 +61,7 @@ def train_test_model(hparams):
         metrics=['accuracy'],
     )
 
-    model.fit(x_train, y_train, epochs=1)
+    model.fit(x_train, y_train)
     _, accuracy = model.evaluate(x_test, y_test)
     return accuracy
 ```
