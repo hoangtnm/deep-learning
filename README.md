@@ -19,6 +19,7 @@ Setup:
 Research:
 
 - <a href="research/action_recognition/README.md">Action Recognition</a><br>
+- <a href="research/detection_transformer/README.md">DEtection TRansformer</a><br>
 - <a href="research/transformers/README.md">Transformers</a><br>
 
 Materials:
