@@ -23,9 +23,9 @@ class SSDMobileNetV2FeatureExtractor(nn.Module):
         backbone = mobilenet_v2(pretrained=True)
         # The output of feature_extractor should have shape of (N, x, 38, 38)
         self.feature_extractor = nn.Sequential(
-            *list(backbone.children())[:6]
+            *list(backbone.features.children())[:7]
         )
-        self.out_channels = [128, 512, 512, 256, 256, 256]
+        self.out_channels = [32, 512, 512, 256, 256, 256]
 
     def forward(self, x):
         return self.feature_extractor(x)
@@ -67,6 +67,7 @@ class SSD300(nn.Module):
 
         self.loc = nn.ModuleList(self.loc)
         self.conf = nn.ModuleList(self.conf)
+        self._init_weights()
 
     def _build_feature_layers(self, input_size: List[int]) -> nn.ModuleList:
         self.feature_blocks = []
@@ -75,13 +76,12 @@ class SSD300(nn.Module):
                     [256, 256, 128, 128, 128])):
             if i < 3:
                 layer = nn.Sequential(
-                    nn.Conv2d(input_size, channels, kernel_size=1,
-                              stride=2, bias=False),
+                    nn.Conv2d(input_size, channels, kernel_size=1, bias=False),
                     nn.BatchNorm2d(channels),
                     nn.ReLU(inplace=True),
                     nn.Conv2d(channels, output_size, kernel_size=3,
                               padding=1, stride=2, bias=False),
-                    nn.BatchNorm2d(channels),
+                    nn.BatchNorm2d(output_size),
                     nn.ReLU(inplace=True),
                 )
             else:
@@ -91,6 +91,7 @@ class SSD300(nn.Module):
                     nn.ReLU(inplace=True),
                     nn.Conv2d(channels, output_size,
                               kernel_size=3, bias=False),
+                    nn.BatchNorm2d(output_size),
                     nn.ReLU(inplace=True),
                 )
 
