@@ -1,7 +1,22 @@
-from typing import List
+# Copyright (c) 2018-2019, NVIDIA CORPORATION. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from typing import List, Tuple
 
 import torch
 import torch.nn as nn
+from torch import Tensor
 from torchvision.models import mobilenet_v2
 
 
@@ -45,35 +60,45 @@ class SSD300(nn.Module):
 
     def __init__(self,
                  backbone=SSDMobileNetV2FeatureExtractor(),
-                 num_labels=3,
+                 num_classes=81,
                  weights=None):
         super().__init__()
         self.input_shape = (3, 300, 300)
-        self.num_classes = num_labels
+        self.num_classes = num_classes
         self.feature_extractor = backbone
         self._build_feature_layers(self.feature_extractor.out_channels)
         self.num_defaults = [4, 6, 6, 6, 4, 4]
         self.loc = []
         self.conf = []
 
-        # Detection heads
+        # Convolutional Filters
+        # Each filter produces either a score for a category,
+        # or a shape offset relative to the default box coordinates
         for nd, oc in zip(self.num_defaults,
                           self.feature_extractor.out_channels):
             self.loc.append(
                 nn.Conv2d(oc, nd * 4, kernel_size=3, padding=1)
             )
             self.conf.append(
-                nn.Conv2d(oc, nd * self.num_classes, kernel_size=3, padding=1))
+                nn.Conv2d(oc, nd * self.num_classes, kernel_size=3, padding=1)
+            )
 
         self.loc = nn.ModuleList(self.loc)
         self.conf = nn.ModuleList(self.conf)
         self._init_weights()
 
     def _build_feature_layers(self, input_size: List[int]) -> nn.ModuleList:
+        """Multi-scale feature maps.
+
+        They correspond to conv7, conv8_2, conv9_2, conv10_2, and conv11_2
+        in the `SSD: Single Shot MultiBox Detector` paper. See details at
+        https://github.com/weiliu89/caffe/blob/ssd/examples/ssd/ssd_pascal.py
+        """
         self.feature_blocks = []
         for i, (input_size, output_size, channels) in enumerate(
                 zip(input_size[:-1], input_size[1:],
                     [256, 256, 128, 128, 128])):
+
             if i < 3:
                 layer = nn.Sequential(
                     nn.Conv2d(input_size, channels, kernel_size=1, bias=False),
@@ -106,8 +131,11 @@ class SSD300(nn.Module):
                 if param.dim() > 1:
                     nn.init.xavier_uniform_(param)
 
-    # Shape the classifier to the view of bboxes
-    def bbox_view(self, src, loc, conf):
+    def bbox_view(self,
+                  src: Tensor,
+                  loc: nn.ModuleList,
+                  conf: nn.ModuleList) -> Tuple[Tensor, Tensor]:
+        """Shape the classifier to the view of bboxes."""
         ret = [
             (
                 l(s).view(s.shape[0], 4, -1),
@@ -132,5 +160,5 @@ class SSD300(nn.Module):
         # Feature Map 38x38x4, 19x19x6, 10x10x6, 5x5x6, 3x3x4, 1x1x4
         locs, confs = self.bbox_view(detection_feed, self.loc, self.conf)
 
-        # For SSD 300, shall return N x 8732 x {num_classes, num_locs} results
+        # For SSD 300, shall return N x {num_locs, num_classes} x 8732 results
         return locs, confs
