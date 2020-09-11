@@ -19,6 +19,7 @@ class TransformerModel(nn.Module):
         num_encoder_layers: the number of sub-encoder-layers in the encoder.
         num_decoder_layers: the number of sub-decoder-layers in the decoder.
         dim_feedforward: the dimension of the feedforward network model.
+        dropout: the dropout value.
 
     Examples:
         >>> model = TransformerModel(src_vocab, tgt_vocab, d_model, nhead)
