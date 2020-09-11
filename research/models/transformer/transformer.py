@@ -59,6 +59,24 @@ class TransformerModel(nn.Module):
                 tgt: Tensor,
                 src_mask: Optional[Tensor] = None,
                 tgt_mask: Optional[Tensor] = None) -> Tensor:
+        """Take in and process masked source/target sequences.
+
+        Args:
+            src: the sequence to the encoder.
+            tgt: the sequence to the decoder.
+            src_mask: the additive mask for the src sequence.
+            tgt_mask: the additive mask for the tgt sequence.
+
+        Returns:
+            A decoded sequence Tensor.
+
+        Shape:
+            - src: (S, N, E).
+            - tgt: (T, N, E).
+            - src_mask: (S, S).
+            - tgt_mask: (T, T).
+            - output: (T, N, E).
+        """
         output = self.transformer(src, tgt, src_mask, tgt_mask)
         output = self.generator(output)
         return output
