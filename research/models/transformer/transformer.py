@@ -33,7 +33,7 @@ class TransformerModel(nn.Module):
                                     [3,2,9,8]])
         >>> tgt = output_embed(tgt).transpose(0, 1)
         >>> tgt = pos_encoder(tgt)
-        >>> out = model(tgt)
+        >>> out = model(src, tgt)
     """
 
     def __init__(self,
