@@ -21,7 +21,7 @@ class TransformerModel(nn.Module):
         dim_feedforward: the dimension of the feedforward network model.
 
     Examples:
-        >>> model = TransformerModel(src_vocab, tgt_vocab, num_layers)
+        >>> model = TransformerModel(src_vocab, tgt_vocab, d_model, nhead)
         >>> input_embed = model.input_embed
         >>> output_embed = model.output_embed
         >>> pos_encoder = model.pos_encoder
