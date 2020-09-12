@@ -23,7 +23,7 @@ def box_cxcywh_to_xyxy(x: Tensor) -> Tensor:
 
 
 def box_xyxy_to_cxcywh(x: Tensor) -> Tensor:
-    """Performs box-coordinates, from Pascal VOC to COCO.
+    """Performs box-coordinates conversion, from Pascal VOC to COCO.
 
     Args:
         x: boxes are expected to be in (x1, y1, x2, y2) format.
