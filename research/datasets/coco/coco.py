@@ -2,6 +2,7 @@ import torch
 import torchvision
 from PIL import Image
 from typing import Callable, Any, Optional, Tuple, Dict
+import research.datasets.coco.transforms as T
 
 
 class CocoDetection(torchvision.datasets.CocoDetection):
@@ -18,7 +19,8 @@ class CocoDetection(torchvision.datasets.CocoDetection):
 
         w, h = img.size
         image_id = torch.tensor([image_id])
-        anno = [obj for obj in target if 'iscrowd' not in obj or obj['iscrowd'] == 0]
+        anno = [obj for obj in target if
+                'iscrowd' not in obj or obj['iscrowd'] == 0]
 
         boxes = [obj['bbox'] for obj in anno]
         boxes = torch.tensor(boxes, dtype=torch.float32).reshape(-1, 4)
@@ -55,3 +57,27 @@ class CocoDetection(torchvision.datasets.CocoDetection):
             img, target = self.transforms(img, target)
 
         return img, target
+
+
+def data_transforms(phase: str, max_size=1333):
+    if phase == 'train':
+        scales = [480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800]
+        return T.Compose([
+            T.RandomHorizontalFlip(),
+            T.RandomChoice([
+                T.RandomResize(scales, max_size),
+                T.Compose([
+                    T.RandomResize([400, 500, 600]),
+                    T.RandomResizedCrop(384, 600),
+                    T.RandomResize(scales, max_size)
+                ])
+            ]),
+            T.ToTensor(),
+            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+    else:
+        return T.Compose([
+            T.RandomResize([800], max_size=1333),
+            T.ToTensor(),
+            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
