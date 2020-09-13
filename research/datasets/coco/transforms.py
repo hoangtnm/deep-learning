@@ -16,7 +16,7 @@ def crop(img: Image.Image, target: Dict[str, Tensor], region: List[int]):
     Args:
         img: PIL Image to be cropped.
         target: A dict mapping keys to the corresponding values.
-        region: A list of [top, left, heigh, width]
+        region: A list of [top, left, height, width]
             or [y_min, x_min, height, width].
 
     Returns:
@@ -44,7 +44,7 @@ def crop(img: Image.Image, target: Dict[str, Tensor], region: List[int]):
 
     # Remove elements for which the boxes having zero area
     if 'boxes' in target:
-        boxes = boxes.view(-1, 2, 2)
+        # boxes = boxes.view(-1, 2, 2)
         # keep = torch.all(boxes[:, 1, :] > boxes[:, 0, :], dim=1)
         keep = area > 0
         for field in fields:
@@ -109,9 +109,8 @@ def resize(img: Image.Image,
     target = target.copy()
     if 'boxes' in target:
         boxes = target['boxes']
-        scaled_boxes = boxes * \
-                       torch.tensor([ratio_width, ratio_height,
-                                     ratio_width, ratio_height])
+        scaled_boxes = boxes * torch.tensor([ratio_width, ratio_height,
+                                             ratio_width, ratio_height])
         target['boxes'] = scaled_boxes
 
     if 'area' in target:
