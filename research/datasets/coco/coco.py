@@ -2,7 +2,7 @@ import torch
 import torchvision
 from PIL import Image
 from torch import Tensor
-from typing import Callable, Optional, Tuple, Dict
+from typing import Callable, Optional, Tuple, Dict, Union
 import research.datasets.coco.transforms as T
 
 
@@ -14,7 +14,8 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         super().__init__(root, annFile)
         self.transforms = transforms
 
-    def __getitem__(self, idx: int) -> Tuple[Image.Image, Dict[str, Tensor]]:
+    def __getitem__(self, idx: int) -> Tuple[Union[Image.Image, Tensor],
+                                             Dict[str, Tensor]]:
         img, target = super().__getitem__(idx)
         image_id = self.ids[idx]
 
