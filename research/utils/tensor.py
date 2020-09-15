@@ -17,10 +17,10 @@ class NestedTensor:
         self.mask = mask
 
     def to(self, device: torch.device):
-        cast_tensor = self.tensor.to(device)
+        tensor = self.tensor.to(device)
         mask = self.mask
-        cast_mask = mask.to(device) if mask is not None else None
-        return NestedTensor(cast_tensor, cast_mask)
+        mask = mask.to(device) if mask is not None else None
+        return NestedTensor(tensor, mask)
 
     def decompose(self):
         return self.tensor, self.mask
