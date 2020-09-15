@@ -1,1 +1,1 @@
-from research.data_structures.tensor import *
+from research.utils.tensor import *

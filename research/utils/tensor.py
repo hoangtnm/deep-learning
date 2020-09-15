@@ -12,22 +12,18 @@ class NestedTensor:
     )
     """
 
-    def __init__(self, tensors: Tensor, mask: Optional[Tensor] = None):
-        self.tensors = tensors
+    def __init__(self, tensor: Tensor, mask: Optional[Tensor] = None):
+        self.tensor = tensor
         self.mask = mask
 
     def to(self, device: torch.device):
-        cast_tensor = self.tensors.to(device)
+        cast_tensor = self.tensor.to(device)
         mask = self.mask
-        if mask is not None:
-            # assert mask is not None
-            cast_mask = mask.to(device)
-        else:
-            cast_mask = None
+        cast_mask = mask.to(device) if mask is not None else None
         return NestedTensor(cast_tensor, cast_mask)
 
     def decompose(self):
-        return self.tensors, self.mask
+        return self.tensor, self.mask
 
     def __repr__(self):
-        return str(self.tensors)
+        return str(self.tensor)
