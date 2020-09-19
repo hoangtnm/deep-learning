@@ -17,9 +17,13 @@ After installing Anaconda, it is recommended to `add some channels to the top of
 
 ```sh
 conda config --add channels pytorch
-# EXPERIMENT: Installing the Intel Distribution for Python
+#
+# Intel Distribution for Python
 # conda config --append channels intel
 # conda create -n idp intelpython3_full python=3
+#
+# Watson Machine Learning Community Edition (WML CE)
+# conda config --append channels https://public.dhe.ibm.com/ibmdl/export/pub/software/server/ibm-ai/conda/
 ```
 
 ## Libraries installation
