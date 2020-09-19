@@ -24,6 +24,9 @@ conda config --add channels pytorch
 #
 # Watson Machine Learning Community Edition (WML CE)
 # conda config --append channels https://public.dhe.ibm.com/ibmdl/export/pub/software/server/ibm-ai/conda/
+#
+# Configuring number of threads
+# conda config --set repodata_threads $(nproc)
 ```
 
 ## Libraries installation
