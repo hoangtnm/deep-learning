@@ -79,9 +79,9 @@ def box_iou(boxes1: Tensor, boxes2: Tensor) -> Tuple[Tensor]:
 
 def generalized_box_iou(boxes1: Tensor, boxes2: Tensor) -> Tensor:
     """Generalized IoU from https://giou.stanford.edu/
-    
+
     The boxes should be in [x1, y1, x2, y2] format
-    
+
     Returns a [N, M] pairwise matrix, where N=len(boxes1) and M=len(boxes2)
     """
     # degenerate boxes gives inf / nan results
