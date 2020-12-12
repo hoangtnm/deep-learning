@@ -32,8 +32,7 @@ conda config --add channels pytorch
 ## Libraries installation
 
 ```sh
-conda install -f requirements_conda.txt
-conda install -r requirements_pip.txt
+conda env create -f environment.yml
 ```
 
 ## Add Libraries to PYTHONPATH

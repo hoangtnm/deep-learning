@@ -1,0 +1,21 @@
+name: dl
+channels:
+  - pytorch
+  - defaults
+  - conda-forge
+dependencies:
+  - pytorch=1.7
+  - torchvision
+  - torchaudio
+  - torchtext
+  - captum
+  - cudatoolkit=11
+  - scikit-learn
+  - spacy
+  - tqdm
+  - boto3
+  - requests
+  - pip:
+      - sentencepiece
+      - sacremoses
+      - transformers
