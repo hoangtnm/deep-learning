@@ -21,3 +21,4 @@ dependencies:
       - sentencepiece
       - sacremoses
       - transformers
+      - imutils
